@@ -15,7 +15,7 @@ def start_handler_main():
       ./start_topology_handler --json-config <path-to-json-conf>
 
     Example:
-      ./start_topology_handler --json-config config/handler_config.json
+      ./start_topology_handler --json-config config/runtime_config.json
 
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
@@ -24,8 +24,7 @@ def start_handler_main():
 
     res = m_util.master_cmd(conf['master_host'],
                             conf['master_port'],
-                            'start',
-                            conf['worker_ip_list'])
+                            'start')
 
     m_util.handle_post_request(res, exit_on_fail=True)
 

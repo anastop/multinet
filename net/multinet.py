@@ -16,7 +16,7 @@ import mininet.node
 import mininet.link
 import mininet.clean
 import itertools
-import net.topologies as topologies
+import net.topologies
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -33,10 +33,10 @@ class Multinet(mininet.net.Mininet):
     """
     name - class correspondence for the topologies
     """
-        'disconnected': topologies.DisconnectedTopo,
-        'linear': topologies.LinearTopo,
-        'ring': topologies.RingTopo,
-        'mesh': topologies.MeshTopo
+        'disconnected': net.topologies.DisconnectedTopo,
+        'linear': net.topologies.LinearTopo,
+        'ring': net.topologies.RingTopo,
+        'mesh': net.topologies.MeshTopo
     }
 
     SWITCH_CLASSES = {
