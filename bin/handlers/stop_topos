@@ -3,7 +3,7 @@
 Command line handler to stop the distributed topologies
 """
 
-import util.mininet_handler_util as h_util
+import util.multinet_requests as m_util
 
 
 def stop_handler_main():
@@ -20,14 +20,14 @@ def stop_handler_main():
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
     """
-    conf = h_util.parse_json_conf()
+    conf = m_util.parse_json_conf()
 
-    res = h_util.master_cmd(conf['master_host'],
+    res = m_util.master_cmd(conf['master_host'],
                             conf['master_port'],
                             'stop',
                             conf['worker_ip_list'])
 
-    h_util.handle_post_request(res, exit_on_fail=True)
+    m_util.handle_post_request(res, exit_on_fail=True)
 
 if __name__ == '__main__':
     stop_handler_main()
