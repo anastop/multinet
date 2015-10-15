@@ -18,8 +18,8 @@ topologies is your primary concern, then you might want to look at other efforts
 such as [Maxinet](https://github.com/mininet/mininet/wiki/Cluster-Edition-Prototype)
 or the [Cluster Edition Prototype](https://github.com/mininet/mininet/wiki/Cluster-Edition-Prototype)
 of Mininet. Instead, Multinet clearly emphasizes on creating scalable pressure to 
-the controller and provides options to control certain aspects that affect the interaction 
-of the and the controller, such as the way these are being connected to it during start-up. 
+the controller and provides options to control certain aspects that affect the 
+switches-controller interaction, such as the way these are being connected during start-up. 
 
 _Why multiple VMs?_
 
