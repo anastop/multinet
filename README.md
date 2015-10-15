@@ -10,10 +10,16 @@ _Why isolated topologies?_
 
 The main motivation behind Multinet was to be able to stress an SDN controller
 in terms of its switch scalable limits. In this context, Multinet contents
-itself to booting topologies that are isolated between them, without caring to
-interconnect them, as we believe this policy is good enough to approximate the
-behavior of large-scale, real-world SDN networks and their interaction with the
-controller.
+itself to booting topologies that are isolated from each other, without really caring
+to be interconnected, as we believe this policy is simple and good enough 
+to approximate the behavior of large-scale realistic SDN networks and their 
+interaction with the controller. If creating large-scale _interconnected_ 
+topologies is your primary concern, then you might want to look at other efforts 
+such as [Maxinet](https://github.com/mininet/mininet/wiki/Cluster-Edition-Prototype)
+or the [Cluster Edition Prototype](https://github.com/mininet/mininet/wiki/Cluster-Edition-Prototype)
+of Mininet. Instead, Multinet clearly emphasizes on creating scalable pressure to 
+the controller and provides options to control certain aspects that affect the interaction 
+of the and the controller, such as the way these are being connected to it during start-up. 
 
 _Why multiple VMs?_
 
