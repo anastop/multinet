@@ -70,7 +70,7 @@ as follows:
 In the next section we demonstrate how to prepare such an environment using
 [Vagrant](https://www.vagrantup.com/) to provision and boot multiple VMs.
 If you already have a custom environment set up, jump to
-[how to run](#how-to-run) section.
+[deployment](#deploy-multinet-on-the-distributed-environment) section.
 
 
 #### Environment setup using Vagrant
@@ -174,7 +174,7 @@ __TODO__: high-level description of the deployment process, i.e. what it does in
 #### Initialize Multinet topologies
 
 __TODO__: we need to talk here about the run options. This is were the subsection
-of Gradual Boot-up should be transferred? 
+of Gradual Boot-up should be transferred? see below
 
 __TODO__: we should mention where (i.e. on which machine) this script should run from
 
@@ -187,6 +187,23 @@ __TODO__: we should mention where (i.e. on which machine) this script should run
 
 __TODO__: elaborate more: what is the effect of this handler? how does it work internally at high-level?
 what options does it offer to the user? is it sync/asyc? (i.e., when do we know it has finished?)
+
+
+
+We observed that the SDN controller displays some instability issues when
+it is overwhelmed with switch additions. The solution we pose to this problem
+is the gradual switch bootup.  
+In more detail, we modified the Mininet `start` method as follows
+- We split the switches we need to start in groups
+- The size of each group is specified by the `group_size` parameter    
+- We start the switches in each group normally  
+- After all the switches in a group have started we insert a delay  
+- The delay is specified by the `group_delay` parameter  
+
+We have observed that this method allows us to boot larger topologies with
+greater stability. Moreover it gives us a way to estimate the boot time of
+a topology in a deterministic way.
+
 
 
 #### Start Multinet topologies
@@ -258,40 +275,29 @@ and reply to the user as soon as it has a complete global view.
 For resource efficiency and speed, it is preferable to create each worker along
 with its topology on a separate machine.
 
-### Implementation Details
 
-_Core components_  
-- `MininetNetwork` class  
-  - Extends the `Mininet` class.  
-  - Adds a dpid offset during the switch creation phase to distinguish between the switches in different instances.  
-  - Inserts the notion of gradual switch bootup, inserting some idle time
-    (`group_delay`) between the bootup of groups of switches (`group_size`)  
-- `worker`  
-  - creates its own `MininetNetwork` instance  
-  - creates a REST API that wraps the exposed methods of that instance.  
-- `master`  
-  - exposes a REST API to the end user.  
-  - broadcasts the commands to the workers  
-  - aggregates the responses and returns a summary response to the end user  
 
-_Gradual bootup_  
-We observed that the SDN controller displays some instability issues when
-it is overwhelmed with switch additions. The solution we pose to this problem
-is the gradual switch bootup.  
-In more detail, we modified the Mininet `start` method as follows
-- We split the switches we need to start in groups
-- The size of each group is specified by the `group_size` parameter    
-- We start the switches in each group normally  
-- After all the switches in a group have started we insert a delay  
-- The delay is specified by the `group_delay` parameter  
+## Code Design
 
-We have observed that this method allows us to boot larger topologies with
-greater stability. Moreover it gives us a way to estimate the boot time of
-a topology in a deterministic way.
 
-### Programmatic API
+#### Code structure
 
-##### Interacting with the master programmatically
+| Path                                             | Description                                     |
+|--------------------------------------------------|-------------------------------------------------|
+| `figs/`             | Figures needed for documentation |
+| `vagrant/`          | Vagrantfiles for fast provisioning of a running environment |
+| `config/`           | configuration files for the init handler and the deploy script |
+| `handlers/`         | Command line wrappers for the leader commands |
+| `util/`             | A more generic utility module |
+| `cleanup.sh`        | cleanup script to reset the virtual machines environment |
+| `deploy.py`         | Automation script to copy and start the master and the workers in the virtual machines |
+| `master.py`         | Master REST server |
+| `worker.py`         | Worker REST server |
+| `MininetNetwork.py` | Class inheriting from the core `Mininet` with added / modified functionality |
+| `topologies.py`     | example topologies |  
+
+
+#### Interacting with the master programmatically
 
 The master exposes a REST API as described bellow
 
@@ -349,6 +355,22 @@ mininet_handler_util.master_cmd(master_host,
                                 ip_list)
 ```
 
+#### Core components
+
+- `MininetNetwork` class  
+  - Extends the `Mininet` class.  
+  - Adds a dpid offset during the switch creation phase to distinguish between the switches in different instances.  
+  - Inserts the notion of gradual switch bootup, inserting some idle time
+    (`group_delay`) between the bootup of groups of switches (`group_size`)  
+- `worker`  
+  - creates its own `MininetNetwork` instance  
+  - creates a REST API that wraps the exposed methods of that instance.  
+- `master`  
+  - exposes a REST API to the end user.  
+  - broadcasts the commands to the workers  
+  - aggregates the responses and returns a summary response to the end user  
+
+
 #### Adding your own topologies
 
 First of all **note** that the build method signature of any existing topology
@@ -401,22 +423,3 @@ def build(self, k=2, n=1, dpid=1, **_opts):
       'mytopo': mytopo.MyTopo
    }
    ```
-
-## Code Structure
-
-
-## Code structure
-
-| Path                                             | Description                                     |
-|--------------------------------------------------|-------------------------------------------------|
-| `figs/`                 | Figures needed for documentation |
-| `vagrant/`                                        | Vagrantfiles for fast provisioning of a running environment |
-| `config/`                                   | configuration files for the init handler and the deploy script |
-| `handlers/`                 | Command line wrappers for the leader commands |
-| `util/`                                     | A more generic utility module |
-| `cleanup.sh`                           | cleanup script to reset the virtual machines environment |
-| `deploy.py`                              | Automation script to copy and start the master and the workers in the virtual machines |
-| `master.py`                              | Master REST server |
-| `worker.py`                              | Worker REST server |
-| `MininetNetwork.py`                                   | Class inheriting from the core `Mininet` with added / modified functionality |
-| `topologies.py`       | example topologies |  
