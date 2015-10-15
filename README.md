@@ -54,7 +54,7 @@ amount of resources_?
 
 ## Getting Started
 
-### Environment setup
+#### Environment setup
 
 To use Multinet you should have a distributed environment of machines configured
 as follows:
@@ -73,7 +73,7 @@ If you already have a custom environment set up, jump to
 [how to run](#how-to-run) section.
 
 
-### Environment setup using Vagrant
+#### Environment setup using Vagrant
 
 Under the `vagrant` directory we provide scripts and Vagrantfiles to
 automatically setup a distributed environment of VMs to run Multinet. The steps
@@ -130,7 +130,9 @@ for this are:
    vagrant up
    ```
 
-### Deploy Multinet on the distributed environment
+#### Deploy Multinet on the distributed environment
+
+__TODO__: high-level description of the deployment process, i.e. what it does in brief, from where it should be performed (e.g., from a machine that has access to all master/worker machines?)
 
 1. Configure deployment options editing the `config/deploy_config.json` to your
    preferences:
@@ -163,27 +165,31 @@ for this are:
 2. Run the `deploy.py` script to copy the necessary files and start the master
    and the workers:
 
+  __TODO__: where should you run this script? see the above TODO
+
    ```bash
    python provision.py --json-config config.json
    ```
 
-### Start Multinet
+#### Initialize Multinet topologies
 
 __TODO__: we need to talk here about the run options. This is were the subsection
-of Gradual Boot-up should be transferred.
+of Gradual Boot-up should be transferred? 
 
+__TODO__: we should mention where (i.e. on which machine) this script should run from
 
-1. Initialize the distributed topologies. This will build an identical topology
-   in every worker machine:
 
    ```bash
    python init_topology_handler.py --json-config init_config.json
    ```
 
-__TODO__: what is the effect of this handler? how does it work internally at high-level?
+  This command will build an identical topology in every worker machine.
+
+__TODO__: elaborate more: what is the effect of this handler? how does it work internally at high-level?
 what options does it offer to the user? is it sync/asyc? (i.e., when do we know it has finished?)
 
-2. Start the topologies  
+
+#### Start Multinet topologies
 
    ```bash
    python start_topology_handler <master-ip> <master-port> <number-of-vms>
@@ -200,10 +206,11 @@ what options does it offer to the user? is it sync/asyc? (i.e., when do we know 
    __TODO__: what is the effect of this handler? how does it work internally at high-level?
    what options does it offer to the user? is it sync/asyc? (i.e., when do we know it has finished?)
 
+__TODO__: we should mention where (i.e. on which machine) this script should run from
 
-### __TODO__: we need to present here the other handlers as well
+#### __TODO__ we need to present here the other handlers as well
 
-### Stop Multinet
+#### Stop Multinet
 
 After you have used the topologies you can stop them:
 
@@ -219,6 +226,9 @@ python stop_topology_handler.py 10.1.1.40 3300 4 10.1.1.40
 
 __TODO__: what is the effect of this handler? how does it work internally at high-level?
 what options does it offer to the user? is it sync/asyc? (i.e., when do we know it has finished?)
+
+__TODO__: we should mention where (i.e. on which machine) this script should run from
+
 
 ## System Architecture
 
