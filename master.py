@@ -12,7 +12,7 @@ topology"""
 import argparse
 import bottle
 import logging
-import mininet_handler_util as h_util
+import util.mininet_handler_util as h_util
 
 # We must define logging level separately because this module runs
 # independently.
@@ -127,21 +127,21 @@ def ping_all():
 
 
 def rest_start():
-    """Starts leader server"""
+    """Starts master server"""
     global REST_PORT
     parser = argparse.ArgumentParser()
-    parser.add_argument('--leader-host',
+    parser.add_argument('--master-host',
                         required=True,
                         type=str,
-                        dest='leader_host',
+                        dest='master_host',
                         action='store',
-                        help='IP address to start the leader server')
-    parser.add_argument('--leader-port',
+                        help='IP address to start the master server')
+    parser.add_argument('--master-port',
                         required=True,
                         type=str,
-                        dest='leader_port',
+                        dest='master_port',
                         action='store',
-                        help='Port number to start the leader server')
+                        help='Port number to start the master server')
     parser.add_argument('--rest-port',
                         required=True,
                         type=str,
@@ -150,7 +150,7 @@ def rest_start():
                         help='Port number to the Mininet REST server')
     args = parser.parse_args()
     REST_PORT = args.rest_port
-    bottle.run(host=args.leader_host, port=args.leader_port, debug=True)
+    bottle.run(host=args.master_host, port=args.master_port, debug=True)
 
 
 if __name__ == '__main__':

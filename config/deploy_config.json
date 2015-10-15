@@ -1,7 +1,7 @@
 {
-"mininet_base_dir": "/home/vagrant/nstat-mininet-handlers",  
-"leader_ip" : "10.1.1.80",
-"mininet_leader_port": 3300,
+"mininet_base_dir": "/home/vagrant/multinet",  
+"master_ip" : "10.1.1.80",
+"mininet_master_port": 3300,
 "mininet_server_rest_port":3333,
 "mininet_ip_list":["10.1.1.80", "10.1.1.81"],
 "mininet_ssh_port":22,

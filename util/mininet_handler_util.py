@@ -199,8 +199,8 @@ def aggregate_broadcast_response(reqs):
     return status, body
 
 
-def leader_init(leader_host,
-                leader_port,
+def master_init(master_host,
+                master_port,
                 ip_list,
                 controller_ip_address,
                 controller_of_port,
@@ -223,18 +223,18 @@ def leader_init(leader_host,
             mininet_group_delay,
             mininet_hosts_per_switch))
 
-    return make_post_request(leader_host,
-                             leader_port,
+    return make_post_request(master_host,
+                             master_port,
                              route,
                              data=ip_list)
 
 
-def leader_cmd(leader_host,
-               leader_port,
+def master_cmd(master_host,
+               master_port,
                opcode,
                ip_list):
 
-    return make_post_request(leader_host,
-                             leader_port,
+    return make_post_request(master_host,
+                             master_port,
                              opcode,
                              data=ip_list)
