@@ -112,16 +112,16 @@ for this are:
    Edit the `Vagrantfile` according to your preferences. For example:
 
    ```rb
-   http_proxy = '' #if you sit behind a corporate proxy, provide it here
-   mh_vm_basebox = 'mh-provisioned' #the name of the Vagrant box we created in step 2
-   mh_vm_ram_mini = '2048' #RAM size per VM
-   mh_vm_cpus_mini = '2' #number of CPUs per VM
-   num_mininet_vms = 10 #total number of VMs to boot
-   mh_vm_private_network_ip_mini = '10.1.1.70' #the first IP Address in the
-                                               #mininet VMs IP Address range
-   forwarded_ports_guest = ['3300'] #ports in guest that you want to forward
-   forwarded_ports_host = ['3300'] #the respective ports in the host machine
-                                   #where the guest ports will be forwarded to
+   http_proxy = ''  # if you sit behind a corporate proxy, provide it here
+   mh_vm_basebox = 'mh-provisioned' # the name of the Vagrant box we created in step 2
+   mh_vm_ram_mini = '2048'  # RAM size per VM
+   mh_vm_cpus_mini = '2'  # number of CPUs per VM
+   num_mininet_vms = 10   # total number of VMs to boot
+   mh_vm_private_network_ip_mini = '10.1.1.70'  # the first IP Address in the
+                                                # mininet VMs IP Address range
+   forwarded_ports_guest = [] # provide here ports in guest that you want to forward
+   forwarded_ports_host = []  # provide here the corresponding ports in the host machine
+                              # where the guest ports will be forwarded to
    ```
 
 3. Boot the VMs:
