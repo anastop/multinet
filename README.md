@@ -255,8 +255,9 @@ this possible, every switch must have a unique DPID to avoid naming collisions
 in the controller's housekeeping mechanism, and to achieve this, Multinet
 automatically assigns a proper DPID offset to each Mininet topology.
 
-The local Mininet topologies are identical, and they are all being handled in the
-same fashion simultaneously. For example, during start up, topologies are being
+The local Mininet topologies are identical in terms of size, structure and 
+configuration, and they are all being handled in the same fashion simultaneously. 
+For example, during start up, topologies are being
 created simultaneously on the worker machines and populated in the same way. To
 relieve the end user from having to manage each topology separately, we have
 adopted a _master-worker model_ for centralized control.
