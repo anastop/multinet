@@ -30,8 +30,11 @@ def parse_json_conf():
 
 
     args = parser.parse_args()
-    json_conf_file = open(args.json_config)
-    return json.load(json_conf_file)
+
+    conf = {}
+    with open(args.json_config) as conf_file:
+      conf = json.load(conf_file)
+    return conf
 
 
 def ip_range(start_ip, num_ips):
@@ -335,7 +338,6 @@ def aggregate_broadcast_response(responses):
 
 def master_init(master_ip,
                 master_port,
-                worker_ip_list,
                 controller_ip_address,
                 controller_of_port,
                 switch_type,
@@ -349,7 +351,6 @@ def master_init(master_ip,
     Args:
       master_ip (str): The IP address of the master
       master_port (int): The port of the master
-      worker_ip_list (list): A list of IP addresses to broadcast the POST request      
       controller_ip_address (str): The IP address of the controller
       controller_of_port (int): The OpenFlow port of the controller
       switch_type (str): The type of soft switch to use for the emulation
@@ -374,19 +375,18 @@ def master_init(master_ip,
             group_delay,
             hosts_per_switch))
 
-    return make_post_request(master_ip, master_port, route, data=worker_ip_list)
+    return make_post_request(master_ip, master_port, route)
 
 
-def master_cmd(master_ip, master_port, opcode, worker_ip_list):
+def master_cmd(master_ip, master_port, opcode):
     """Wrapper function to send a command to the master
 
     Args:
       master_ip (str): The IP address of the master
       master_port (int): The port of the master
       opcode (str): The REST API endpoint (the command we want to send)
-      worker_ip_list (list): A list of IP addresses to broadcast the POST request      
  
     Returns:
       requests.models.Response: The HTTP response for the performed request
     """
-    return make_post_request(master_ip, master_port, opcode, data=worker_ip_list)
+    return make_post_request(master_ip, master_port, opcode)

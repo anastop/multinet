@@ -16,7 +16,7 @@ def pingall_handler_main():
       ./pingall_handler --json-config <path-to-json-conf>
 
     Example:
-      ./pingall_handler --json-config config/handler_config.json
+      ./pingall_handler --json-config config/runtime_config.json
 
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
@@ -25,8 +25,7 @@ def pingall_handler_main():
 
     res = m_util.master_cmd(conf['master_host'],
                             conf['master_port'],
-                            'ping_all',
-                            conf['ip_list'])
+                            'ping_all')
 
     m_util.handle_post_request(res, exit_on_fail=False)
 

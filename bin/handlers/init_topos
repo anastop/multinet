@@ -19,7 +19,7 @@ def master_init_main():
       bin/handlers/init_topology_handler --json-config <path-to-json-conf>
 
     Example:
-      bin/handlers/init_topology_handler --json-config config/handler_config.json
+      bin/handlers/init_topology_handler --json-config config/runtime_config.json
 
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
@@ -28,7 +28,6 @@ def master_init_main():
     
     res = m_util.master_init(conf['master_host'],
                              conf['master_port'],
-                             conf['worker_ip_list'],
                              conf['controller_ip_address'],
                              conf['controller_of_port'],
                              conf['switch_type'],

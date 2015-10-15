@@ -21,6 +21,7 @@ import util.multinet_requests as m_util
 logging.basicConfig(level=logging.DEBUG)
 
 WORKER_PORT = ''
+WORKER_IP_LIST = []
 
 
 @bottle.route(
@@ -45,8 +46,9 @@ def init(ip_address, port, topo, switch_type, size, group, delay, hosts):
       list: A list of responses for all the POST requests performed
     """
     global WORKER_PORT
-    ip_list = bottle.request.json
-    reqs = m_util.broadcast_init(ip_list,
+    global WORKER_IP_LIST
+
+    reqs = m_util.broadcast_init(WORKER_IP_LIST,
                                  WORKER_PORT,
                                  ip_address,
                                  port,
@@ -67,10 +69,9 @@ def start():
     Aggregate the responses
     """
     global WORKER_PORT
-    ip_list = bottle.request.json
-    reqs = m_util.broadcast_cmd(ip_list,
-                                WORKER_PORT,
-                                'start')
+    global WORKER_IP_LIST
+
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'start')
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -82,10 +83,9 @@ def get_switches():
     Aggregate the responses
     """
     global WORKER_PORT
-    ip_list = bottle.request.json
-    reqs = m_util.broadcast_cmd(ip_list,
-                                WORKER_PORT,
-                                'get_switches')
+    global WORKER_IP_LIST
+
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'get_switches')
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -97,10 +97,9 @@ def stop():
     Aggregate the responses
     """
     global WORKER_PORT
-    ip_list = bottle.request.json
-    reqs = m_util.broadcast_cmd(ip_list,
-                                WORKER_PORT,
-                                'stop')
+    global WORKER_IP_LIST
+
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'stop')
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -112,17 +111,20 @@ def ping_all():
     Aggregate the responses
     """
     global WORKER_PORT
-    ip_list = bottle.request.json
-    reqs = m_util.broadcast_cmd(ip_list,
-                                WORKER_PORT,
-                                'ping_all')
+    global WORKER_IP_LIST
+
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'ping_all')
     stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
 
 def rest_start():
-    """Start the master server"""
+    """
+    Parse the command line arguments and start the master server
+    """
     global WORKER_PORT
+    global WORKER_IP_LIST
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--master-host',
                         required=True,
@@ -136,14 +138,22 @@ def rest_start():
                         dest='master_port',
                         action='store',
                         help='Port number to start the master server')
-    parser.add_argument('--worker-port',
+    parser.add_argument('--runtime-config',
                         required=True,
                         type=str,
-                        dest='worker_port',
+                        dest='runtime_config',
                         action='store',
-                        help='Port number to the Mininet REST server')
+                        help='Runtime configuration JSON File')
+
     args = parser.parse_args()
-    WORKER_PORT = args.WORKER_PORT
+
+    runtime_config = {}
+    with open(args.runtime_config) as config_file:
+        runtime_config = json.load(config_file)
+
+    WORKER_IP_LIST = runtime_config['worker_ip_list']
+    WORKER_PORT = runtime_config['worker_port']
+
     bottle.run(host=args.master_host, port=args.master_port, debug=True)
 
 

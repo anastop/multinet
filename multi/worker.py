@@ -13,7 +13,7 @@ import argparse
 import bottle
 import json
 import logging
-import topologies
+import net.topologies
 
 from net.multinet import Multinet
 
@@ -121,7 +121,7 @@ def ping_line_pair(host1, host2):
     def hostName(host):
         parsed = [int(x) for x in host.split(',')]
         sw, port = parsed[0], parsed[1]
-        return topologies.genHostName(sw,
+        return net.topologies.genHostName(sw,
                                       port,
                                       MININET_TOPO._dpid_offset,
                                       MININET_TOPO._num_switches)

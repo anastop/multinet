@@ -16,7 +16,7 @@ def get_switches_main():
       ./get_switches_handler --json-config <path-to-json-conf>
 
     Example:
-      ./get_switches_handler --json-config config/handler_config.json
+      ./get_switches_handler --json-config config/runtime_config.json
 
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
@@ -25,8 +25,7 @@ def get_switches_main():
 
     res = m_util.master_cmd(conf['master_host'],
                             conf['master_port'],
-                            'get_switches',
-                            conf['worker_ip_list'])
+                            'get_switches')
 
     m_util.handle_post_request(res, exit_on_fail=False)
 
