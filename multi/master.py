@@ -6,19 +6,21 @@
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-"""With this module ee start the REST mininet server, that manages a mininet distributed
-topology"""
+"""
+With this module we create the master REST server
+to manage the distributed topologies
+"""
 
 import argparse
 import bottle
 import logging
-import util.mininet_handler_util as h_util
+import util.multinet_util as m_util
 
 # We must define logging level separately because this module runs
 # independently.
 logging.basicConfig(level=logging.DEBUG)
 
-REST_PORT = ''
+WORKER_PORT = ''
 
 
 @bottle.route(
@@ -26,31 +28,26 @@ REST_PORT = ''
     method='POST')
 def init(ip_address, port, topo, switch_type, size, group, delay, hosts):
     """
-    Initializes a new topology object. The type of the new topology is
-    defined by the topo parameter.
+    Broadcast the POST request to the 'init' endpoint of the workers
+    Aggregate the responses
 
-    :param ip_address: controller IP address
-    :param port: controller OF port number
-    :param topo: type of the topology we want to start ("DisconnectedTopo",
-                 "LinearTopo", "MeshTopo")
-    :param size: initial number of switches to boot the topology with
-    :param group: group addition size
-    :paran delay: group addition delay (in milliseconds)
-    :param hosts: number of hosts per switch.
-    :param dpid: dpid offset of topology.
-    :type ip_address: str
-    :type port: int
-    :type topo: str
-    :type size: int
-    :type group: int
-    :type delay: int
-    :type hosts: int
-    :type dpid: int
+    Args:
+      controller_ip_address (str): The IP address of the controller
+      controller_of_port (int): The OpenFlow port of the controller
+      switch_type (str): The type of soft switch to use for the emulation
+      topo_type (str): The type of the topology we want to build
+      topo_size (int): The size of the topology we want to build
+      group_size (int): The number of switches in a gorup for gradual bootup
+      group_delay (int): The delay between the bootup of each group
+      hosts_per_switch (int): The number of hosts connected to each switch
+
+    Returns:
+      list: A list of responses for all the POST requests performed
     """
-    global REST_PORT
+    global WORKER_PORT
     ip_list = bottle.request.json
-    reqs = h_util.broadcast_init(ip_list,
-                                 REST_PORT,
+    reqs = m_util.broadcast_init(ip_list,
+                                 WORKER_PORT,
                                  ip_address,
                                  port,
                                  switch_type,
@@ -59,76 +56,73 @@ def init(ip_address, port, topo, switch_type, size, group, delay, hosts):
                                  group,
                                  delay,
                                  hosts)
-    stat, bod = h_util.aggregate_broadcast_response(reqs)
+    stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
 
 @bottle.route('/start', method='POST')
 def start():
     """
-    Calls the start_topology() method of the current topology object to start
-    the switches of the topology.
+    Broadcast the POST request to the 'start' endpoint of the workers
+    Aggregate the responses
     """
-    global REST_PORT
+    global WORKER_PORT
     ip_list = bottle.request.json
-    reqs = h_util.broadcast_cmd(ip_list,
-                                REST_PORT,
+    reqs = m_util.broadcast_cmd(ip_list,
+                                WORKER_PORT,
                                 'start')
-    stat, bod = h_util.aggregate_broadcast_response(reqs)
+    stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
 
 @bottle.route('/get_switches', method='POST')
 def get_switches():
     """
-    Calls the get_switches() method of the current topology object to query the
-    current number of switches.
-
-    :returns: number of switches of the topology
-    :rtype: int
+    Broadcast the POST request to the 'get_switches' endpoint of the workers
+    Aggregate the responses
     """
-    global REST_PORT
+    global WORKER_PORT
     ip_list = bottle.request.json
-    reqs = h_util.broadcast_cmd(ip_list,
-                                REST_PORT,
+    reqs = m_util.broadcast_cmd(ip_list,
+                                WORKER_PORT,
                                 'get_switches')
-    stat, bod = h_util.aggregate_broadcast_response(reqs)
+    stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
 
 @bottle.route('/stop', method='POST')
 def stop():
     """
-    Calls the stop_topology() method of the current topology object to terminate
-    the topology.
+    Broadcast the POST request to the 'stop' endpoint of the workers
+    Aggregate the responses
     """
-    global REST_PORT
+    global WORKER_PORT
     ip_list = bottle.request.json
-    reqs = h_util.broadcast_cmd(ip_list,
-                                REST_PORT,
+    reqs = m_util.broadcast_cmd(ip_list,
+                                WORKER_PORT,
                                 'stop')
-    stat, bod = h_util.aggregate_broadcast_response(reqs)
+    stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
 
 @bottle.route('/ping_all', method='POST')
 def ping_all():
     """
-    Calls the ping_all() method of the current topology object to issue
-    all-to-all ping commands
+    Broadcast the POST request to the 'ping_all' endpoint of the workers
+    Aggregate the responses
     """
-    global REST_PORT
+    global WORKER_PORT
     ip_list = bottle.request.json
-    reqs = h_util.broadcast_cmd(ip_list,
-                                REST_PORT,
+    reqs = m_util.broadcast_cmd(ip_list,
+                                WORKER_PORT,
                                 'ping_all')
-    stat, bod = h_util.aggregate_broadcast_response(reqs)
+    stat, bod = m_util.aggregate_broadcast_response(reqs)
     return bottle.HTTPResponse(status=stat, body=bod)
 
 
 def rest_start():
-    """Starts master server"""
-    global REST_PORT
+    """Start the master server"""
+    global WORKER_PORT
     parser = argparse.ArgumentParser()
     parser.add_argument('--master-host',
                         required=True,
@@ -142,14 +136,14 @@ def rest_start():
                         dest='master_port',
                         action='store',
                         help='Port number to start the master server')
-    parser.add_argument('--rest-port',
+    parser.add_argument('--worker-port',
                         required=True,
                         type=str,
-                        dest='rest_port',
+                        dest='worker_port',
                         action='store',
                         help='Port number to the Mininet REST server')
     args = parser.parse_args()
-    REST_PORT = args.rest_port
+    WORKER_PORT = args.WORKER_PORT
     bottle.run(host=args.master_host, port=args.master_port, debug=True)
 
 

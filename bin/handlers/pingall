@@ -4,7 +4,7 @@ Command line handler to do a pingall in each one
 of the distributed topologies 
 """
 
-import util.mininet_handler_util as h_util
+import util.multinet_util as m_util
 
 
 def pingall_handler_main():
@@ -21,14 +21,14 @@ def pingall_handler_main():
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
     """
-    conf = h_util.parse_json_conf()
+    conf = m_util.parse_json_conf()
 
-    res = h_util.master_cmd(conf['master_host'],
+    res = m_util.master_cmd(conf['master_host'],
                             conf['master_port'],
                             'ping_all',
                             conf['ip_list'])
 
-    h_util.handle_post_request(res, exit_on_fail=False)
+    m_util.handle_post_request(res, exit_on_fail=False)
 
 if __name__ == '__main__':
     pingall_handler_main()

@@ -21,47 +21,69 @@ import topologies
 logging.basicConfig(level=logging.DEBUG)
 
 
-class MininetNetwork(mininet.net.Mininet):
+class Multinet(mininet.net.Mininet):
 
     """
     Superclass representing a Mininet topology that is being booted in custom
     way. Switches are being added in groups with certain delay between each
     group.
     """
+
     TOPOS = {
+    """
+    name - class correspondence for the topologies
+    """
         'disconnected': topologies.DisconnectedTopo,
         'linear': topologies.LinearTopo,
         'ring': topologies.RingTopo,
         'mesh': topologies.MeshTopo
     }
 
-    switch_classes = {'ovsk': mininet.node.OVSKernelSwitch, 'user': mininet.node.UserSwitch }
+    SWITCH_CLASSES = {
+    """
+    name - class correspondence for the soft switches
+    """
+        'ovsk': mininet.node.OVSKernelSwitch,
+        'user': mininet.node.UserSwitch
+    }
 
-    def __init__(self, controller_ip, controller_port, switch_name, topo_name,
+    def __init__(self, controller_ip, controller_port, switch_type, topo_type,
                  num_switches, group_size, group_delay_ms, hosts_per_switch,
-                 dpid_offset):
-        #            'ring': RingTopo,
-        #            'mesh': MeshTopo,
-        self._topo_name = topo_name
+                 dpid_offset, auto_detect_hosts=False):
+        """
+        Call the super constructor and initialize any extra properties we want to user
+
+        Args:
+            controller_ip (str): The IP address of the RemoteController
+            controller_port (int): The OpenFlow port of the RemoteController
+            switch_type (str): The type of the soft switch to use for the emulation
+            topo_type (str): The type of the topology to build
+            num_switches (int): The number of the switches in the topology
+            group_size (int): The number of switches in a gorup for gradual bootup
+            group_delay_ms (int): The delay between the bootup of each group
+            hosts_per_switch (int): The number of hosts connected to each switch
+            dpid_offset (int): The dpid offset of this worker
+            auto_detect_hosts (bool): Enable or disable automatic host detection
+        """
+        self._topo_type = topo_type
         self._num_switches = num_switches
         self._dpid_offset = dpid_offset
         self._group_size = group_size
         self._group_delay = float(group_delay_ms) / 1000
         self._hosts_per_switch = hosts_per_switch
-
+        self.auto_detect_hosts = auto_detect_hosts
         self._controller_ip = controller_ip
         self._controller_port = controller_port
 
-
         super(
-            MininetNetwork,
+            Multinet,
             self).__init__(
             topo=self.TOPOS[
-                self._topo_name](
+                self._topo_type](
                 k=self._num_switches,
                 n=self._hosts_per_switch,
                 dpid=self._dpid_offset),
-            switch=self.switch_classes[switch_name],
+            switch=self.SWITCH_CLASSES[switch_type],
             host=mininet.node.Host,
             controller=mininet.node.RemoteController,
             link=mininet.link.Link,
@@ -79,9 +101,11 @@ class MininetNetwork(mininet.net.Mininet):
         self.ipBaseNum += self._dpid_offset
 
     def buildFromTopo(self, topo=None):
-        """Build mininet from a topology object
-           At the end of this function, everything should be connected
-           and up."""
+        """
+        Build mininet from a topology object
+        At the end of this function, everything should be connected and up.
+        Use the dpid offset to distinguise the nodes between Multinet Instances
+        """
 
         info = logging.info
         # Possibly we should clean up here and/or validate
@@ -135,7 +159,9 @@ class MininetNetwork(mininet.net.Mininet):
         info('\n')
 
     def init_topology(self):
-        """Inits the topology"""
+        """
+        Init the topology
+        """
 
         logging.info("[mininet] Initializing topology.")
         self.build()
@@ -143,7 +169,10 @@ class MininetNetwork(mininet.net.Mininet):
                      'Booted up {0} switches'.format(self._num_switches))
 
     def start_topology(self):
-        "Start controller and switches."
+        """
+        Start controller and switches.
+        Do a gradual bootup.
+        """
         info = logging.info
         if not self.built:
             self.build()
@@ -176,9 +205,18 @@ class MininetNetwork(mininet.net.Mininet):
         logging.info('[mininet] Topology started successfully. '
                      'Booted up {0} switches'.format(self._num_switches))
         time.sleep(self._group_delay * 2)
-        self.detect_hosts(ping_cnt=50)
+
+        if self.auto_detect_hosts:
+            self.detect_hosts(ping_cnt=50)
 
     def detect_hosts(self, ping_cnt=50):
+        """
+        Do a ping from each host to the void to send a PACKET_IN to the controller
+        and enable the controller host detector
+
+        Args:
+            ping_cnt: Number of pings to send from each host
+        """
         for host in self.hosts:
             # ping the void
             host.sendCmd('ping -c{0} {1}'.format(str(ping_cnt),
@@ -189,24 +227,21 @@ class MininetNetwork(mininet.net.Mininet):
     def get_switches(self):
         """Returns the total number of switches of the topology
 
-        :returns: number of switches of the topology
-        :rtype: int
+        Returns:
+            (int): number of switches in the topology
         """
         return len(self.switches)
 
     def stop_topology(self):
-        """Stops the topology"""
+        """
+        Stops the topology
+        """
 
         logging.info('[mininet] Halting topology. Terminating switches.')
         for h in self.hosts:
             h.sendInt()
         mininet.clean.cleanup()
         logging.info('[mininet] Topology halted successfully')
-
-#    def stop_switches(self):
-#        '''Stops all the switches in the topology
-#        '''
-#        self.stop()
 
     def ping_all(self):
         """

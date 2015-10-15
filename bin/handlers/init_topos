@@ -5,7 +5,7 @@ Command line handler to build the distributed topologies
 """
 
 import json
-import util.handler_util as h_util
+import util.multinet_util as m_util
 import argparse
 
 logging.getLogger().setLevel(logging.DEBUG)
@@ -24,9 +24,9 @@ def master_init_main():
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
     """
-    conf = h_util.parse_json_conf()
+    conf = m_util.parse_json_conf()
     
-    res = h_util.master_init(conf['master_host'],
+    res = m_util.master_init(conf['master_host'],
                              conf['master_port'],
                              conf['worker_ip_list'],
                              conf['controller_ip_address'],
@@ -38,7 +38,7 @@ def master_init_main():
                              conf['group_delay'],
                              conf['hosts_per_switch'])
 
-    h_util.handle_post_request(res, exit_on_fail=True)
+    m_util.handle_post_request(res, exit_on_fail=True)
 
 if __name__ == '__main__':
     master_init_main()

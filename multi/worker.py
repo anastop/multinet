@@ -15,7 +15,7 @@ import json
 import logging
 import topologies
 
-from MininetNetwork import MininetNetwork
+from Multinet import Multinet
 
 # We must define logging level separately because this module runs
 # independently.
@@ -52,7 +52,7 @@ def init(ip_address, port, switch_type, topo, size, group, delay, hosts, dpid):
     """
 
     global MININET_TOPO
-    MININET_TOPO = MininetNetwork(
+    MININET_TOPO = Multinet(
         ip_address,
         int(port),
         switch_type,
