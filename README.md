@@ -2,12 +2,11 @@
 
 The goal of Multinet is to provide a fast, controlled and resource-efficient way
 to boot large-scale SDN topologies. It builds on the [Mininet](https://github.com/mininet/mininet)
-project to emulate SDN networks via multiple isolated topologies, each mapped to
-a separate VM, and all connected to the same controller.
+project to emulate SDN networks via multiple isolated topologies, each launched on
+a separate machine, and all connected to the same controller.
 
-Multinet has been verified with the Lithium release of OpenDaylight controller,
-where we managed to successfully boot and make visible to the controller a
-distributed topology of 3000 switches.
+Multinet has been verified with the Lithium release of the OpenDaylight controller,
+where we managed to successfully boot a distributed topology of 3000 OVS switches.
 
 
 _Why isolated topologies?_
@@ -25,6 +24,7 @@ of Mininet. Instead, Multinet clearly emphasizes on creating scalable pressure t
 the controller and provides options to control certain aspects that affect the
 switches-controller interaction, such as the way these are being connected during start-up.
 
+
 _Why multiple VMs?_
 
 The cost to boot a large Mininet topology on a single machine grows
@@ -37,15 +37,15 @@ amount of resources_?
 
 ## Features
 
-- Large-scale SDN networks emulation, using multiple isolated Mininet
+- __Large-scale SDN networks__ emulation, using multiple isolated Mininet
   topologies distributed across multiple VMs
-- Controllable boot-up of switches in groups of configurable size and
+- __Controllable boot-up__ of switches in groups of configurable size and
   configurable intermediate delay. This enables studying different policies of
   connecting large-scale topologies to the controller.   
-- Centralized and RESTful control of topologies via a master-worker architecture
-- Well-known topology types offered out-of-the-box (`disconnected`, `linear`,
+- __Centralized__ and __RESTful__ control of topologies via a master-worker architecture
+- __Well-known topology types__ offered out-of-the-box (`disconnected`, `linear`,
   `ring`, `mesh`)
-- Smooth integration with custom topologies created via the high-level Mininet API,
+- __Smooth integration with custom topologies__ created via the high-level Mininet API,
   provided they have slightly modified their `build` method
 
 
