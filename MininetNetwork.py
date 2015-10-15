@@ -74,7 +74,7 @@ class MininetNetwork(mininet.net.Mininet):
             autoSetMacs=False,
             autoStaticArp=False,
             autoPinCpus=False,
-            listenPort=None,
+            listenPort=6634,
             waitConnected=False)
         self.ipBaseNum += self._dpid_offset
 

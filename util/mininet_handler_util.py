@@ -4,9 +4,26 @@ import multiprocessing
 import json
 import time
 import logging
+import argparse
 
 
 logging.getLogger().setLevel(logging.DEBUG)
+
+def parse_json_conf():
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+
+    parser.add_argument('--json-config',
+                        required=True,
+                        type=str,
+                        dest='json_config',
+                        action='store',
+                        help='Configuration file (JSON)')
+
+
+    args = parser.parse_args()
+    json_conf_file = open(args.json_config)
+    return json.load(json_conf_file)
+
 
 def ip_range(start_ip, num_ips):
     '''

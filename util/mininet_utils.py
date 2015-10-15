@@ -43,7 +43,7 @@ def start_mininet_server(mininet_ssh_session, mininet_server_remote_path,
 
 
 def start_mininet_worker(mininet_ssh_session, mininet_server_remote_path,
-                           mininet_rest_server_host, mininet_rest_server_port):
+                         mininet_rest_server_host, mininet_rest_server_port):
     """
     Remotely boots a REST server on the Mininet node over an SSH connection
 

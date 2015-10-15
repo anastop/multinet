@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+"""Get the number of started switches
+Command line handler to get the number of started switches 
+from the distributed topologies
+"""
+
+import util.mininet_handler_util as h_util
+
+
+def get_switches_main():
+    """Main
+    Send a POST request to the master 'get_switches' endpoint, 
+    validate the response code and print the responses
+
+    Usage: 
+      ./get_switches_handler --json-config <path-to-json-conf>
+
+    Example:
+      ./get_switches_handler --json-config config/handler_config.json
+
+    Command Line Arguments:
+      json-config (str): Path to the JSON configuration file to be used
+    """
+    conf = h_util.parse_json_conf()
+
+    res = h_util.master_cmd(conf['master_host'],
+                            conf['master_port'],
+                            'get_switches',
+                            conf['worker_ip_list'])
+
+    h_util.handle_post_request(res, exit_on_fail=False)
+
+if __name__ == '__main__':
+    get_switches_main()

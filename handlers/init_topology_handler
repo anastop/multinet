@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+"""Initialize the Mininet topologies
+Command line handler to build the distributed topologies
+"""
+
+import json
+import util.handler_util as h_util
+import argparse
+
+logging.getLogger().setLevel(logging.DEBUG)
+
+def master_init_main():
+    """Main
+    Send a POST request to the master 'init' endpoint, 
+    validate the response code and print the responses
+
+    Usage: 
+      bin/handlers/init_topology_handler --json-config <path-to-json-conf>
+
+    Example:
+      bin/handlers/init_topology_handler --json-config config/handler_config.json
+
+    Command Line Arguments:
+      json-config (str): Path to the JSON configuration file to be used
+    """
+    conf = h_util.parse_json_conf()
+    
+    res = h_util.master_init(conf['master_host'],
+                             conf['master_port'],
+                             conf['worker_ip_list'],
+                             conf['controller_ip_address'],
+                             conf['controller_of_port'],
+                             conf['switch_type'],
+                             conf['topo_type'],
+                             conf['topo_size'],
+                             conf['group_size'],
+                             conf['group_delay'],
+                             conf['hosts_per_switch'])
+
+    h_util.handle_post_request(res, exit_on_fail=True)
+
+if __name__ == '__main__':
+    master_init_main()
