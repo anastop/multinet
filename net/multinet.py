@@ -16,7 +16,7 @@ import mininet.node
 import mininet.link
 import mininet.clean
 import itertools
-import topologies
+import net.topologies as topologies
 
 logging.basicConfig(level=logging.DEBUG)
 

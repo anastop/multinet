@@ -15,7 +15,7 @@ import json
 import logging
 import topologies
 
-from Multinet import Multinet
+from net.multinet import Multinet
 
 # We must define logging level separately because this module runs
 # independently.

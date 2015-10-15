@@ -14,7 +14,7 @@ to manage the distributed topologies
 import argparse
 import bottle
 import logging
-import util.multinet_util as m_util
+import util.multinet_requests as m_util
 
 # We must define logging level separately because this module runs
 # independently.

@@ -5,7 +5,7 @@ Command line handler to build the distributed topologies
 """
 
 import json
-import util.multinet_util as m_util
+import util.multinet_requests as m_util
 import argparse
 
 logging.getLogger().setLevel(logging.DEBUG)
