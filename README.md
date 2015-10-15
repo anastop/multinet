@@ -42,43 +42,42 @@ amount of resources_?
 ![Multinet Architecture](figs/multinet.png)
 
 
-## Quick Start Guide
+## Getting Started
 
 ### Environment setup
 
-To utilize the `Multinet` features you should have a distributed environment
-set up with the following configuration and dependencies
-- The machines should have an external IP and be able to communicate with
-  each other. The easiest way to achieve this is to put the in
-  a private network  
-- `Python 2.7` is required
-- A recent version of `Mininet` should be installed. We support `2.2.1rc`  
-- `bottle`, `requests` and `paramiko` should be installed with `pip`  
-- If you are under a virtualized environment, the virtio drivers provide
-  greater throughput (also see [the vagrant docs](https://docs.vagrantup.com/v2/virtualbox/networking.html))
+To use Multinet you should have a distributed environment of machines configured
+as follows:
+
+- Software dependences:
+    - Python 2.7
+    - `bottle`, `requests` and `paramiko` Python packages
+    - a recent version of Mininet (we support 2.2.1rc)
+- Connectivity:
+    - the machines should be able to communicate with each other
+    - the machines should have SSH connectivity
 
 In the next section we demonstrate how to prepare such an environment using
-Vagrant to boot multiple virtual machines. If you already have a custom environment
-set up jump to [how to run section](#how-to-run) section.
+[Vagrant](https://www.vagrantup.com/) to provision and boot multiple VMs.
+If you already have a custom environment set up, jump to
+[how to run](#how-to-run) section.
 
 ### Environment setup using Vagrant
-
-Just follow these instructions
 
 1. Provision the base box
 
    ```bash
-   cd vagrant/base
+   cd vagrant/base/
    ```
 
-   Edit the `http_proxy` variable in the `Vagrantfile` if you are
-   behind a corporate proxy. Then start provisioning as follows:
+   If you sit behind a proxy, edit the `http_proxy` variable in the
+   `Vagrantfile`. Then start provisioning:
 
    ```bash
    vagrant up
    ```
 
-2. Package the base box (also take a look at [this guide](https://scotch.io/tutorials/how-to-create-a-vagrant-base-box-from-an-existing-one)
+2. Package the base box
 
    ```bash
    vagrant package --output mh-provisioned.box
@@ -86,25 +85,28 @@ Just follow these instructions
    vagrant destroy
    ```
 
+   For more info on Vagrant box packaging take a look at
+   [this guide](https://scotch.io/tutorials/how-to-create-a-vagrant-base-box-from-an-existing-one)
+
 3. Configure the virtual machines
 
    ```bash
-   cd ../packaged_multi
+   cd vagrant/packaged_multi/
    ```
 
    Edit the `Vagrantfile` according to your preferences. For example:
 
    ```rb
-   http_proxy = '' # If you are behind a corporate proxy
-   mh_vm_basebox = 'mh-provisioned' # the name of the box we added in step 2
-   mh_vm_ram_mini = '2048' # RAM size per VM
-   mh_vm_cpus_mini = '2' # Number of CPUs per VM
-   num_mininet_vms = 10 # Number of VMs to boot
-   mh_vm_private_network_ip_mini = '10.1.1.70' # the first IP Address in the  
-                                               # mininet VMs IP Address range
-   forwarded_ports_guest = ['8181'] # Ports in guest that you want to forward
-   forwarded_ports_host = ['8182'] # The respective ports in the host machine  
-                                   # that the guest ports will be forwarded to
+   http_proxy = '' #if you sit behind a corporate proxy, provide it here
+   mh_vm_basebox = 'mh-provisioned' #the name of the Vagrant box we created in step 2
+   mh_vm_ram_mini = '2048' #RAM size per VM
+   mh_vm_cpus_mini = '2' #number of CPUs per VM
+   num_mininet_vms = 10 #total number of VMs to boot
+   mh_vm_private_network_ip_mini = '10.1.1.70' #the first IP Address in the
+                                               #mininet VMs IP Address range
+   forwarded_ports_guest = ['8181'] #ports in guest that you want to forward
+   forwarded_ports_host = ['8182'] #the respective ports in the host machine
+                                   #where the guest ports will be forwarded to
    ```
 
 4. Boot the virtual machines as follows:
@@ -115,28 +117,37 @@ Just follow these instructions
 
 ### How to run
 
-1. Edit `config.json` to your preferences  
-   ```
+1. Edit `config.json` to your preferences:
+
+   ```json
    {
-       # The location inside the VMs where the files will be copied  
-       "mininet_base_dir": "/home/vagrant/multinet",  
-       "master_ip" : "10.1.1.70", # master IP (usually the first in range)  
-       # The ports the master and the workers will listen to  
-       "mininet_master_port": 3300,  
-       "mininet_server_rest_port":3333,  
-       #list of the VM IP addresses
-       "mininet_ip_list":[  
-           "10.1.1.70",  
-           "10.1.1.71"  
-        ],  
-       # options to enable ssh connectivity
-       "mininet_ssh_port":22,  
-       "mininet_username":"vagrant",  
-       "mininet_password":"vagrant"  
+       "multinet_base_dir": "/home/vagrant/multinet",  
+       "master_ip" : "10.1.1.70",
+       "master_port": 3300,  
+       "worker_port": 3333,  
+       "worker_ip_list": [ "10.1.1.70", "10.1.1.71" ],  
+       "ssh_port": 22,  
+       "username": "vagrant",  
+       "password": "vagrant"  
    }
    ```
 
+   In the file above:
+   - `multinet_base_dir` is the location inside the machines where deployment
+      files will be copied. This location is common for all participating machines
+   - `master_ip` is the IP address of the machine where the master will run
+   - `master_port` is the port where the master listens for REST requests
+      from external client applications
+   - `worker_port` is the port where each worker listens for REST requests
+      from the master
+   - `worker_ip_list` is the list with the IPs of all machines where workers
+      will be created to launch topologies
+   - `ssh_port` is the port where machines listen for SSH connections
+   - `username`, `password` are the credentials used to access via SSH the machines
+
+
 2. Run the `provision.py` script to copy and start the master and the workers  
+
    ```bash
    python provision.py --json-config config.json
    ```
@@ -353,4 +364,3 @@ def build(self, k=2, n=1, dpid=1, **_opts):
 | `worker.py`                              | Worker REST server |
 | `MininetNetwork.py`                                   | Class inheriting from the core `Mininet` with added / modified functionality |
 | `topologies.py`       | example topologies |  
-

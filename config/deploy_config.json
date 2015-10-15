@@ -1,10 +1,10 @@
 {
-"mininet_base_dir": "/home/vagrant/multinet",  
-"master_ip" : "10.1.1.80",
-"mininet_master_port": 3300,
-"mininet_server_rest_port":3333,
-"mininet_ip_list":["10.1.1.80", "10.1.1.81"],
-"mininet_ssh_port":22,
-"mininet_username":"vagrant",
-"mininet_password":"vagrant"
+  "multinet_base_dir": "/home/vagrant/multinet",
+  "master_ip" : "10.1.1.80",
+  "master_port": 3300,
+  "worker_port": 3333,
+  "worker_ip_list": ["10.1.1.80", "10.1.1.81"],
+  "ssh_port": 22,
+  "username": "vagrant",
+  "password": "vagrant"
 }
