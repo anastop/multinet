@@ -1,6 +1,6 @@
 {
-"leader_host":"10.1.1.80",
-"leader_port":3300,
+"master_host":"10.1.1.80",
+"master_port":3300,
 "ip_list":["10.1.1.80", "10.1.1.81"],
 "controller_ip_address":"10.1.1.39",
 "controller_of_port":6653,

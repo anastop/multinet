@@ -42,7 +42,7 @@ def start_mininet_server(mininet_ssh_session, mininet_server_remote_path,
     time.sleep(10)
 
 
-def start_mininet_follower(mininet_ssh_session, mininet_server_remote_path,
+def start_mininet_worker(mininet_ssh_session, mininet_server_remote_path,
                            mininet_rest_server_host, mininet_rest_server_port):
     """
     Remotely boots a REST server on the Mininet node over an SSH connection
@@ -62,19 +62,19 @@ def start_mininet_follower(mininet_ssh_session, mininet_server_remote_path,
                          mininet_rest_server_host, mininet_rest_server_port)
 
 
-def start_mininet_leader(leader_ssh_session, leader_remote_path,
-                         leader_host, leader_port, mininet_rest_server_port):
+def start_mininet_master(master_ssh_session, master_remote_path,
+                         master_host, master_port, mininet_rest_server_port):
     """
     TODO
     """
 
     boot_command = (
-        'sudo python {0} --leader-host {1} --leader-port {2} --rest-port {3}  |& tee {0}:{1}:{2}_log.txt '. format(
-            leader_remote_path,
-            leader_host,
-            leader_port,
+        'sudo python {0} --master-host {1} --master-port {2} --rest-port {3}  |& tee {0}:{1}:{2}_log.txt '. format(
+            master_remote_path,
+            master_host,
+            master_port,
             mininet_rest_server_port))
-    util.netutil.ssh_run_command(leader_ssh_session, boot_command)
+    util.netutil.ssh_run_command(master_ssh_session, boot_command)
     logging.debug('{0} {1}'.format('[start_mininet_server] Boot command: ',
                                    boot_command))
     time.sleep(10)
@@ -192,7 +192,7 @@ def stop_mininet_server(mininet_ssh_session, mininet_rest_server_port):
     util.netutil.ssh_run_command(mininet_ssh_session, 'sudo mn -c')
 
 
-def stop_mininet_follower(mininet_ssh_session, mininet_rest_server_port):
+def stop_mininet_worker(mininet_ssh_session, mininet_rest_server_port):
     """
     Remotely stops the REST server on the Mininet node
 
@@ -204,7 +204,7 @@ def stop_mininet_follower(mininet_ssh_session, mininet_rest_server_port):
     stop_mininet_server(mininet_ssh_session, mininet_rest_server_port)
 
 
-def stop_mininet_leader(leader_ssh_session, leader_port):
+def stop_mininet_master(master_ssh_session, master_port):
     """
     Remotely stops the REST server on the Mininet node
 
@@ -213,7 +213,7 @@ def stop_mininet_leader(leader_ssh_session, leader_port):
     :type test_type: ssh connection object
     :type mininet_rest_server_port: int
     """
-    stop_mininet_server(leader_ssh_session, leader_port)
+    stop_mininet_server(master_ssh_session, master_port)
 
 
 def delete_mininet_handlers(mininet_ssh_server_ip, mininet_user, mininet_pass,

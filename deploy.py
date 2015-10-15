@@ -24,11 +24,11 @@ if __name__ == '__main__':
     conf = json.load(json_conf_file)
 
     mininet_server_remote_path = \
-            '/tmp/transfered_files/nstat-mininet-handlers/follower.py'
-    leader_remote_path = \
-            '/tmp/transfered_files/nstat-mininet-handlers/leader.py'
-    leader_ip = conf['leader_ip']
-    leader_port = conf['mininet_leader_port']
+            '/tmp/transfered_files/nstat-mininet-handlers/worker.py'
+    master_remote_path = \
+            '/tmp/transfered_files/nstat-mininet-handlers/master.py'
+    master_ip = conf['master_ip']
+    master_port = conf['mininet_master_port']
     mininet_ssh_port = conf['mininet_ssh_port']
     mininet_rest_server_port = conf['mininet_server_rest_port']
     mininet_username = conf['mininet_username']
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     #total_mininet_size=[int((sz/total_vms)*total_vms) for sz in conf['mininet_size']]
 
     mininet_ssh_sessions = {}
-    ip_list_cp_files = mininet_ip_list + [conf['leader_ip']]
+    ip_list_cp_files = mininet_ip_list + [conf['master_ip']]
     for curr_ip in ip_list_cp_files:
         logging.info('Initiating session with Mininet VM.')
         mininet_ssh_session = util.netutil.ssh_connect_or_return(curr_ip,
@@ -60,13 +60,13 @@ if __name__ == '__main__':
                                             '/tmp/transfered_files/',
                                             mininet_ssh_port)
 
-    util.mininet_utils.start_mininet_leader(mininet_ssh_sessions[leader_ip],
-                                       leader_remote_path,
-                                       leader_ip,
-                                       leader_port,
+    util.mininet_utils.start_mininet_master(mininet_ssh_sessions[master_ip],
+                                       master_remote_path,
+                                       master_ip,
+                                       master_port,
                                        mininet_rest_server_port)
     for curr_ip in mininet_ip_list:
-        util.mininet_utils.start_mininet_follower(mininet_ssh_sessions[curr_ip],
-                                             mininet_server_remote_path,
-                                             curr_ip,
-                                             mininet_rest_server_port)
+        util.mininet_utils.start_mininet_worker(mininet_ssh_sessions[curr_ip],
+                                                mininet_server_remote_path,
+                                                curr_ip,
+                                                mininet_rest_server_port)
