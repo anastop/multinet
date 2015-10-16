@@ -118,8 +118,6 @@ for this are:
    mh_vm_cpus_mini = '2'  # number of CPUs per VM
    num_mininet_vms = 10   # total number of VMs to boot
    mh_vm_private_network_ip_mini = '10.1.1.70'  # the first IP Address in the mininet VMs IP Address range
-   forwarded_ports_guest = [] # provide here ports in guest that you want to forward
-   forwarded_ports_host = []  # provide here the corresponding ports in the host machine where the guest ports will be forwarded to
    ```
 
 3. Boot the VMs:
