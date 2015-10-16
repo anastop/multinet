@@ -22,7 +22,7 @@ def stop_handler_main():
     """
     conf = m_util.parse_json_conf()
 
-    res = m_util.master_cmd(conf['master_host'],
+    res = m_util.master_cmd(conf['master_ip'],
                             conf['master_port'],
                             'stop')
 

@@ -161,13 +161,11 @@ __TODO__: this explanation is not valid, it needs clarification
    - `ssh_port` is the port where machines listen for SSH connections
    - `username`, `password` are the credentials used to access via SSH the machines
 
-2. Run the `deploy.py` script to copy the necessary files and start the master
-   and the workers:
-
-  __TODO__: where should you run this script? see the above TODO
+2. Run the `deploy.py` script in the external user console to copy the 
+   necessary files and start the master and the workers:
 
    ```bash
-   python provision.py --json-config config.json
+   [user@my_machine multinet/bin]$ ./deploy --json-config config.json
    ```
 
 #### Initialize Multinet topologies
@@ -179,7 +177,7 @@ __TODO__: we should mention where (i.e. on which machine) this script should run
 
 
    ```bash
-   python init_topology_handler.py --json-config init_config.json
+   [user@my_machine multinet/bin]$ ./init_topos --json-config init_config.json
    ```
 
   This command will build an identical topology in every worker machine.

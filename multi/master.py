@@ -11,7 +11,6 @@ With this module we create the master REST server
 to manage the distributed topologies
 """
 
-import argparse
 import bottle
 import logging
 import util.multinet_requests as m_util
@@ -125,36 +124,14 @@ def rest_start():
     global WORKER_PORT
     global WORKER_IP_LIST
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--master-host',
-                        required=True,
-                        type=str,
-                        dest='master_host',
-                        action='store',
-                        help='IP address to start the master server')
-    parser.add_argument('--master-port',
-                        required=True,
-                        type=str,
-                        dest='master_port',
-                        action='store',
-                        help='Port number to start the master server')
-    parser.add_argument('--runtime-config',
-                        required=True,
-                        type=str,
-                        dest='runtime_config',
-                        action='store',
-                        help='Runtime configuration JSON File')
+    runtime_config = m_util.parse_json_conf()
 
-    args = parser.parse_args()
-
-    runtime_config = {}
-    with open(args.runtime_config) as config_file:
-        runtime_config = json.load(config_file)
-
+    master_ip = runtime_config['master_ip']
+    master_port = runtime_config['master_port']
     WORKER_IP_LIST = runtime_config['worker_ip_list']
     WORKER_PORT = runtime_config['worker_port']
 
-    bottle.run(host=args.master_host, port=args.master_port, debug=True)
+    bottle.run(host=master_ip, port=master_port, debug=True)
 
 
 if __name__ == '__main__':

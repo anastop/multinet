@@ -26,7 +26,7 @@ def master_init_main():
     """
     conf = m_util.parse_json_conf()
     
-    res = m_util.master_init(conf['master_host'],
+    res = m_util.master_init(conf['master_ip'],
                              conf['master_port'],
                              conf['controller_ip_address'],
                              conf['controller_of_port'],
