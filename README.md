@@ -148,6 +148,9 @@ __TODO__: high-level description of the deployment process, i.e. what it does in
 
    - `multinet_base_dir` is the location inside the machines where deployment
       files will be copied. This location is common for all participating machines
+
+__TODO__: this explanation is not valid, it needs clarification 
+
    - `master_ip` is the IP address of the machine where the master will run
    - `master_port` is the port where the master listens for REST requests
       from external client applications
