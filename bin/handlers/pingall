@@ -13,10 +13,10 @@ def pingall_handler_main():
     validate the response code and print the responses
 
     Usage: 
-      ./pingall_handler --json-config <path-to-json-conf>
+      bin/handler/pingall --json-config <path-to-json-conf>
 
     Example:
-      ./pingall_handler --json-config config/runtime_config.json
+      bin/handler/pingall --json-config config/runtime_config.json
 
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used

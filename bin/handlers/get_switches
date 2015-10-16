@@ -13,10 +13,10 @@ def get_switches_main():
     validate the response code and print the responses
 
     Usage: 
-      ./get_switches_handler --json-config <path-to-json-conf>
+      bin/handler/get_switches --json-config <path-to-json-conf>
 
     Example:
-      ./get_switches_handler --json-config config/runtime_config.json
+      bin/handler/get_switches --json-config config/runtime_config.json
 
     Command Line Arguments:
       json-config (str): Path to the JSON configuration file to be used
