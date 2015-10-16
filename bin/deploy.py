@@ -23,12 +23,12 @@ if __name__ == '__main__':
     master_remote_path = '/tmp/multinet/master.py'
     master_ip = conf['master_ip']
     master_port = conf['master_port']
-    ssh_port = conf['ssh_port']
+    ssh_port = conf['deploy']['ssh_port']
     worker_port = conf['worker_port']
-    username = conf['username']
+    username = conf['deploy']['username']
     password = conf['password']
-    worker_ips = conf['worker_ip_list']
-    multinet_base_dir = conf['multinet_base_dir']
+    worker_ips = conf['deploy']['worker_ip_list']
+    multinet_base_dir = conf['deploy']['multinet_base_dir']
 
     total_worker_machines = len(worker_ips)
 

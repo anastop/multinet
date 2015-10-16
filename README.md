@@ -136,13 +136,15 @@ __TODO__: high-level description of the deployment process, i.e. what it does in
    ```json
    {
        "multinet_base_dir": "/home/vagrant/multinet",  
-       "master_ip" : "10.1.1.70",
+       "master_ip" : "10.1.1.80",
        "master_port": 3300,  
        "worker_port": 3333,  
-       "worker_ip_list": [ "10.1.1.70", "10.1.1.71" ],  
+       "worker_ip_list": [ "10.1.1.80", "10.1.1.81" ],  
        "ssh_port": 22,  
        "username": "vagrant",  
        "password": "vagrant"  
+
+       
    }
    ```
 
@@ -170,14 +172,35 @@ __TODO__: this explanation is not valid, it needs clarification
 
 #### Initialize Multinet topologies
 
-__TODO__: we need to talk here about the run options. This is were the subsection
-of Gradual Boot-up should be transferred? see below
+__TODO__: we need to talk here about the run options. This is were the subsection of Gradual Boot-up should be transferred? see below
 
-__TODO__: we should mention where (i.e. on which machine) this script should run from
+1. Configure the runtime options in the `runtime_config.json` file.
 
+   ```json
+   {
+      "master_ip":"10.1.1.80",
+      "master_port":3300,
+      "worker_ip_list":["10.1.1.80", "10.1.1.81"],
+      "worker_port":3333,
+
+   }
+   ```
+
+Where
+   - `master_ip` is the IP address of the machine where the master will run
+   - `master_port` is the port where the master listens for REST requests
+      from external client applications
+   - `worker_ip_list` is the list with the IPs of all machines where workers
+      will be created to launch topologies
+   - `worker_port` is the port where each worker listens for REST requests
+      from the master
+   - `ssh_port` is the port where machines listen for SSH connections
+   - `username`, `password` are the credentials used to access via SSH the machines
+
+Run the follow command inside the end user machine  
 
    ```bash
-   [user@my_machine multinet/bin]$ ./init_topos --json-config init_config.json
+   [user@my_machine multinet/bin]$ ./init_topos --json-config runtime_config.json
    ```
 
   This command will build an identical topology in every worker machine.

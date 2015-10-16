@@ -28,14 +28,14 @@ def master_init_main():
     
     res = m_util.master_init(conf['master_ip'],
                              conf['master_port'],
-                             conf['controller_ip_address'],
-                             conf['controller_of_port'],
-                             conf['switch_type'],
-                             conf['topo_type'],
-                             conf['topo_size'],
-                             conf['group_size'],
-                             conf['group_delay'],
-                             conf['hosts_per_switch'])
+                             conf['topo']['controller_ip_address'],
+                             conf['topo']['controller_of_port'],
+                             conf['topo']['switch_type'],
+                             conf['topo']['topo_type'],
+                             conf['topo']['topo_size'],
+                             conf['topo']['group_size'],
+                             conf['topo']['group_delay'],
+                             conf['topo']['hosts_per_switch'])
 
     m_util.handle_post_request(res, exit_on_fail=True)
 
