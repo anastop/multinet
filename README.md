@@ -130,21 +130,22 @@ for this are:
 
 __TODO__: high-level description of the deployment process, i.e. what it does in brief, from where it should be performed (e.g., from a machine that has access to all master/worker machines?)
 
-1. Configure deployment options editing the `config/deploy_config.json` to your
-   preferences:
+1. Configure the master / worker IP addresses and ports and the `deploy`
+   options inside the `config/config.json`:
 
    ```json
    {
-       "multinet_base_dir": "/home/vagrant/multinet",  
-       "master_ip" : "10.1.1.80",
-       "master_port": 3300,  
-       "worker_port": 3333,  
-       "worker_ip_list": [ "10.1.1.80", "10.1.1.81" ],  
-       "ssh_port": 22,  
-       "username": "vagrant",  
-       "password": "vagrant"  
+      "master_ip" : "10.1.1.80",
+      "master_port": 3300,
+      "worker_port": 3333,
+      "worker_ip_list": ["10.1.1.80", "10.1.1.81"],
 
-       
+      "deploy": {
+        "multinet_base_dir": "/home/vagrant/multinet",
+        "ssh_port": 22,
+        "username": "vagrant",
+        "password": "vagrant"
+      }
    }
    ```
 
@@ -155,7 +156,7 @@ __TODO__: this explanation is not valid, it needs clarification
 
    - `master_ip` is the IP address of the machine where the master will run
    - `master_port` is the port where the master listens for REST requests
-      from external client applications
+     from external client applications
    - `worker_port` is the port where each worker listens for REST requests
       from the master
    - `worker_ip_list` is the list with the IPs of all machines where workers
@@ -167,48 +168,56 @@ __TODO__: this explanation is not valid, it needs clarification
    necessary files and start the master and the workers:
 
    ```bash
-   [user@my_machine multinet/bin]$ ./deploy --json-config config.json
+   [user@machine multinet/]$ bin/deploy --json-config config.json
    ```
 
 #### Initialize Multinet topologies
 
 __TODO__: we need to talk here about the run options. This is were the subsection of Gradual Boot-up should be transferred? see below
 
-1. Configure the runtime options in the `runtime_config.json` file.
+1. Make sure the master / worker IP addresses and ports in the 
+   `config/config.json` file are properly configured. Then configure
+   the `topo` options
 
    ```json
    {
-      "master_ip":"10.1.1.80",
-      "master_port":3300,
-      "worker_ip_list":["10.1.1.80", "10.1.1.81"],
-      "worker_port":3333,
-
+      "topo": {
+        "controller_ip_address":"10.1.1.39",
+        "controller_of_port":6653,
+        "switch_type":"ovsk",
+        "topo_type":"linear",
+        "topo_size":30,
+        "group_size":3,
+        "group_delay":100,
+        "hosts_per_switch":2
+      }
    }
    ```
 
 Where
-   - `master_ip` is the IP address of the machine where the master will run
-   - `master_port` is the port where the master listens for REST requests
-      from external client applications
-   - `worker_ip_list` is the list with the IPs of all machines where workers
-      will be created to launch topologies
-   - `worker_port` is the port where each worker listens for REST requests
-      from the master
-   - `ssh_port` is the port where machines listen for SSH connections
-   - `username`, `password` are the credentials used to access via SSH the machines
+   - `controller_ip_address` is the IP address of the machine where the 
+     controller will run
+   - `controller_of_port` is the port where the controller listens for 
+     OpenFlow traffic
+   - `switch_type` is the type of soft switch used for the emulation
+   - `topo_type` is the type of topology to be booted
+   - `topo_size` is the size of topology to be booted
+   - `group_size`, `group_delay` are the parameters defining the gradual 
+     bootup groups
+   - `hosts_per_switch` is the number of hosts connected to each switch
 
-Run the follow command inside the end user machine  
+2. Run the following command inside the end user machine  
 
    ```bash
-   [user@my_machine multinet/bin]$ ./init_topos --json-config runtime_config.json
+   [user@machine multinet]$ bin/handlers/init_topos --json-config config/config.json
    ```
 
-  This command will build an identical topology in every worker machine.
+  This command sends an `init` command to every worker machine in parallel,
+  and an identical Mininet topology will be built in each machine.  
+  If all the topologies are built successfully you should synchronously 
+  get a `200 OK` response code.  
 
-__TODO__: elaborate more: what is the effect of this handler? how does it work internally at high-level?
-what options does it offer to the user? is it sync/asyc? (i.e., when do we know it has finished?)
-
-
+#### Gradual Bootup
 
 We observed that the SDN controller displays some instability issues when
 it is overwhelmed with switch additions. The solution we pose to this problem
@@ -225,46 +234,93 @@ greater stability. Moreover it gives us a way to estimate the boot time of
 a topology in a deterministic way.
 
 
-
 #### Start Multinet topologies
 
-   ```bash
-   python start_topology_handler <master-ip> <master-port> <number-of-vms>
-   <starting-ip-in-range>
-   ```
-
-   For example:
+Run the following command inside the end user machine  
 
    ```bash
-   python start_topology_handler.py 10.1.1.40 3300 4 10.1.1.40
+   [user@machine multinet/]$ bin/handlers/start_topos --json-config <path-to-config-file>
    ```
-   The topologies should now be booted and ready for use
-
-   __TODO__: what is the effect of this handler? how does it work internally at high-level?
-   what options does it offer to the user? is it sync/asyc? (i.e., when do we know it has finished?)
-
-__TODO__: we should mention where (i.e. on which machine) this script should run from
-
-#### __TODO__ we need to present here the other handlers as well
-
-#### Stop Multinet
-
-After you have used the topologies you can stop them:
-
-```bash
-python stop_topology_handler.py <master-ip> <master-port> <number-of-vms> <starting-ip-in-range>
-```
 
 For example:
 
-```bash
-python stop_topology_handler.py 10.1.1.40 3300 4 10.1.1.40
-```
+   ```bash
+   [user@machine multinet/]$ bin/handlers/start_topos --json-config config/config.json
+   ```
 
-__TODO__: what is the effect of this handler? how does it work internally at high-level?
-what options does it offer to the user? is it sync/asyc? (i.e., when do we know it has finished?)
+This command should run __after__ the `init` command.  
+It sends a `start` command to every worker machine in parallel and boots the 
+topologies.    
+If all the topologies are booted successfully you should synchronously 
+get a `200 OK` response code.  
 
-__TODO__: we should mention where (i.e. on which machine) this script should run from
+
+#### Get the number of switches
+
+Run the following command inside the end user machine  
+
+   ```bash
+   [user@machine multinet/]$ bin/handlers/get_switches --json-config <path-to-config-file>
+   ```
+
+For example:
+
+   ```bash
+   [user@machine multinet/]$ bin/handlers/get_switches --json-config config/config.json
+   ```
+
+This command should run __after__ the `start` command.  
+It sends a `get_switches` command to every worker machine in parallel and 
+queries the number of bootes switches.    
+If the operation runs on a successfully booted topology you should 
+synchronously get a `200 OK` response code and the number of switches should 
+be logged.  
+
+
+#### Do a pingall operation
+
+Run the following command inside the end user machine  
+
+   ```bash
+   [user@machine multinet/]$ bin/handlers/pingall --json-config <path-to-config-file>
+   ```
+
+For example:
+
+   ```bash
+   [user@machine multinet/]$ bin/handlers/pingall --json-config config/config.json
+   ```
+
+This command should run __after__ the `start` command.  
+It sends a `pingall` command to every worker machine in parallel and performs
+a pingall operation.    
+If the operation runs on a successfully booted topology you should 
+synchronously get a `200 OK` response code and the pingall output should 
+be logged.  
+_Note_ that a `pingall` operation may take a long time to complete if the 
+topology has many hosts.  
+
+
+#### Stop Multinet topologies  
+
+Run the following command inside the end user machine  
+
+   ```bash
+   [user@machine multinet/]$ bin/handlers/stop_topos --json-config config/config.json
+   ```
+
+For example:
+
+   ```bash
+   [user@machine multinet/]$ bin/handlers/stop_topos --json-config config/config.json
+   ```
+
+This command should run __after__ the `start` command.  
+It sends a `stop` command to every worker machine in parallel and destroys the 
+topologies.    
+If all the topologies are destroyed successfully you should synchronously 
+get a `200 OK` response code.  
+
 
 
 ## System Architecture
