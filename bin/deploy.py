@@ -1,23 +1,11 @@
 import util.netutil
 import util.mininet_utils
-import argparse
-import json
+import util.multinet_requests as m_util
 import sys
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-
-    parser.add_argument('--json-config',
-                        required=True,
-                        type=str,
-                        dest='json_config',
-                        action='store',
-                        help='Deployment configuration file (JSON)')
-
-    args = parser.parse_args()
-    json_conf_file = open(args.json_config)
-    conf = json.load(json_conf_file)
+    conf = m_util.parse_json_conf()
 
     mininet_server_remote_path = '/tmp/multinet/worker.py'
     master_remote_path = '/tmp/multinet/master.py'
