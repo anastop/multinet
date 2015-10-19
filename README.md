@@ -268,6 +268,28 @@ If all the topologies are booted successfully you should synchronously
 get a `200 OK` response code.  
 
 
+#### Make the hosts visible
+
+Run the following command inside the end user machine  
+
+   ```bash
+   [user@machine multinet/]$ bin/handlers/detect_hosts --json-config <path-to-config-file>
+   ```
+
+For example:
+
+   ```bash
+   [user@machine multinet/]$ bin/handlers/detect_hosts --json-config config/config.json
+   ```
+
+This command should run __after__ the `start` command.  
+It sends a `detect_hosts` command to every worker machine in parallel to make 
+the hosts visible in the controller side.  
+If all the topologies are booted successfully you should synchronously 
+get a `200 OK` response code.  
+_Note_ that a `detect_hosts` operation may take a long time to complete if the 
+topology has many hosts. 
+
 #### Get the number of switches
 
 Run the following command inside the end user machine  

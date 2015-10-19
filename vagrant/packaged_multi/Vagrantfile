@@ -63,9 +63,10 @@ Vagrant.configure(2) do |config|
             machine.vm.network :private_network, ip: mh_vm_private_network_ip_mini_inst, nictype: "virtio"
 
             if mn_vm == 1
-                forwarded_ports_guest.zip(forwarded_ports_host).each do |guest_port, host_port|
+                forwarded_ports_master.zip(forwarded_ports_host).each do |guest_port, host_port|
                     machine.vm.network 'forwarded_port', guest: guest_port, host: host_port, auto_correct: true
                 end
+            end
 
             machine.vm.provider :virtualbox do |vb|
                 # Display the VirtualBox GUI when booting the machine

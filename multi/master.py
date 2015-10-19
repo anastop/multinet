@@ -75,6 +75,20 @@ def start():
     return bottle.HTTPResponse(status=stat, body=bod)
 
 
+@bottle.route('/detect_hosts', method='POST')
+def start():
+    """
+    Broadcast the POST request to the 'detect_hosts' endpoint of the workers
+    Aggregate the responses
+    """
+    global WORKER_PORT
+    global WORKER_IP_LIST
+
+    reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'detect_hosts')
+    stat, bod = m_util.aggregate_broadcast_response(reqs)
+    return bottle.HTTPResponse(status=stat, body=bod)
+
+
 @bottle.route('/get_switches', method='POST')
 def get_switches():
     """
