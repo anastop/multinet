@@ -115,10 +115,24 @@ for this are:
    http_proxy = ''  # if you sit behind a corporate proxy, provide it here
    mh_vm_basebox = 'mh-provisioned' # the name of the Vagrant box we created in step 2
    mh_vm_ram_mini = '2048'  # RAM size per VM
-   mh_vm_cpus_mini = '2'  # number of CPUs per VM
-   num_mininet_vms = 10   # total number of VMs to boot
+   mh_vm_cpus_mini = '2'    # number of CPUs per VM
+   num_multinet_vms = 10    # total number of VMs to boot
    mh_vm_private_network_ip_mini = '10.1.1.70'  # the first IP Address in the mininet VMs IP Address range
    ```
+
+   _Optional Configuration_ 
+   If you need port forwarding from the master guest machine to the
+   host machine, edit these variables inside the `Vagrantfile`:  
+```rb
+forwarded_ports_master = [] # A list of the ports the guest VM needs to forward
+forwarded_ports_host = []   # The host ports where the guest ports will be 
+                            # forwarded to (1 - 1 correspondence)
+# Example:
+#   port 3300 from master VM will be forwarded to port 3300 of host machine  
+#   port 6634 from master VM will be forwarded to port 6635 of host machine  
+#   forwarded_ports_master = [3300, 6634]  
+#   forwarded_ports_host = [3300, 6635] 
+```
 
 3. Boot the VMs:
 

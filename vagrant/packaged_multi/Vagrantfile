@@ -10,9 +10,9 @@ http_proxy = ''
 mh_vm_basebox = 'mh-provisioned'
 mh_vm_ram_mini = '2048'
 mh_vm_cpus_mini = '2'
-num_mininet_vms = 2
-mh_vm_private_network_ip_mini = '10.1.1.80' # the first IP Address in the  mininet VMs IP Address range
-forwarded_ports_guest = []
+num_multinet_vms = 2
+mh_vm_private_network_ip_mini = '10.1.1.80' # the first IP Address in the  multinet VMs IP Address range
+forwarded_ports_master = []
 forwarded_ports_host = []
 ################################################################
 
@@ -38,18 +38,18 @@ Vagrant.configure(2) do |config|
     config.ssh.shell = 'bash -c "BASH_ENV=/etc/profile exec bash"'
 
 
-    # Configure mininet VMs
-    mh_vm_hostname_mini = 'mininet' 
+    # Configure multinet VMs
+    mh_vm_hostname_mini = 'multinet' 
 
-    (1..num_mininet_vms).each do |mn_vm|     
+    (1..num_multinet_vms).each do |mn_vm|     
         
-        # Assign adjacent IP addresses to all mininet VMs
+        # Assign adjacent IP addresses to all multinet VMs
         last_ip_digit = mh_vm_private_network_ip_mini[-1].to_i
         new_last_ip_digit = last_ip_digit + (mn_vm - 1)
         base_ip = mh_vm_private_network_ip_mini[0..-2]
         mh_vm_private_network_ip_mini_inst = base_ip + new_last_ip_digit.to_s
 
-        puts "Mininet VM " + mn_vm.to_s + " IP: " + mh_vm_private_network_ip_mini_inst
+        puts "multinet VM " + mn_vm.to_s + " IP: " + mh_vm_private_network_ip_mini_inst
 
         uid_mini = ENV.has_key?('VM_UID') ? '_' + ENV['VM_UID'].split('-')[0] : '_' + mh_vm_private_network_ip_mini_inst
         mh_vm_name_mini_inst = 'mh_ubuntu_box_'  + ENV['USER'] + uid_mini + '_mini' + "_" + mn_vm.to_s
@@ -62,9 +62,10 @@ Vagrant.configure(2) do |config|
             machine.vm.host_name = mh_vm_hostname_mini_inst + '.' + mh_vm_hostname_mini_inst
             machine.vm.network :private_network, ip: mh_vm_private_network_ip_mini_inst, nictype: "virtio"
 
-            forwarded_ports_guest.zip(forwarded_ports_host).each do |guest_port, host_port|
-                machine.vm.network 'forwarded_port', guest: guest_port, host: host_port, auto_correct: true
-            end
+            if mn_vm == 1
+                forwarded_ports_guest.zip(forwarded_ports_host).each do |guest_port, host_port|
+                    machine.vm.network 'forwarded_port', guest: guest_port, host: host_port, auto_correct: true
+                end
 
             machine.vm.provider :virtualbox do |vb|
                 # Display the VirtualBox GUI when booting the machine
