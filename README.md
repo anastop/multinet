@@ -173,7 +173,22 @@ __TODO__: this explanation is not valid, it needs clarification
 
 #### Initialize Multinet topologies
 
-__TODO__: we need to talk here about the run options. This is were the subsection of Gradual Boot-up should be transferred? see below
+_Gradual Bootup_
+
+We observed that the Opendaylight SDN controller displays some 
+instability issues when it is overwhelmed with switch additions.  
+The solution we pose to this problem is the gradual switch bootup.  
+In more detail, we modified the Mininet `start` method as follows
+- We split the switches we need to start in groups
+- The size of each group is specified by the `group_size` parameter    
+- We start the switches in each group normally  
+- After all the switches in a group have started we insert a delay  
+- The delay is specified by the `group_delay` parameter  
+
+We have observed that this method allows us to boot larger topologies with
+greater stability. Moreover it gives us a way to estimate the boot time of
+a topology in a deterministic way.
+
 
 1. Make sure the master / worker IP addresses and ports in the 
    `config/config.json` file are properly configured. Then configure
@@ -216,22 +231,6 @@ Where
   and an identical Mininet topology will be built in each machine.  
   If all the topologies are built successfully you should synchronously 
   get a `200 OK` response code.  
-
-#### Gradual Bootup
-
-We observed that the SDN controller displays some instability issues when
-it is overwhelmed with switch additions. The solution we pose to this problem
-is the gradual switch bootup.  
-In more detail, we modified the Mininet `start` method as follows
-- We split the switches we need to start in groups
-- The size of each group is specified by the `group_size` parameter    
-- We start the switches in each group normally  
-- After all the switches in a group have started we insert a delay  
-- The delay is specified by the `group_delay` parameter  
-
-We have observed that this method allows us to boot larger topologies with
-greater stability. Moreover it gives us a way to estimate the boot time of
-a topology in a deterministic way.
 
 
 #### Start Multinet topologies
@@ -361,17 +360,18 @@ with its topology on a separate machine.
 
 | Path                                             | Description                                     |
 |--------------------------------------------------|-------------------------------------------------|
+| `bin/`              | Binaries |
+| `bin/handlers/`     | Command Line Handlers |
+| `bin/cleanup.sh`    | cleanup script to reset the virtual machines environment |
+| `bin/deploy.py`     | Automation script to copy and start the master and the workers in the virtual machines |
+| `config/`           | configuration file for the handlers, the deployment and the master |
 | `figs/`             | Figures needed for documentation |
+| `multi`             | Module containing the Master / Worker REST servers |
+| `net`               | Module containing the Mininet related functionality |
+| `net/multinet`      | Class inheriting from the core `Mininet` with added / modified functionality |
+| `net/topologies.py` | example topologies |  
+| `util/`             | Utility modules |
 | `vagrant/`          | Vagrantfiles for fast provisioning of a running environment |
-| `config/`           | configuration files for the init handler and the deploy script |
-| `handlers/`         | Command line wrappers for the leader commands |
-| `util/`             | A more generic utility module |
-| `cleanup.sh`        | cleanup script to reset the virtual machines environment |
-| `deploy.py`         | Automation script to copy and start the master and the workers in the virtual machines |
-| `master.py`         | Master REST server |
-| `worker.py`         | Worker REST server |
-| `MininetNetwork.py` | Class inheriting from the core `Mininet` with added / modified functionality |
-| `topologies.py`     | example topologies |  
 
 
 #### Interacting with the master programmatically
@@ -405,42 +405,38 @@ The master exposes a REST API as described bellow
   @bottle.route('/get_switches', method='POST')
   ```
 
-You can also utilize the following wrapper functions
-from the `mininet_handler_util` module
+You can also utilize the following wrapper functions from the 
+`multinet_requests` module
 
 ```python
 # Send a POST request to the master 'init' endpoint
-mininet_handler_util.master_init(master_host,
-                                 master_port,
-                                 ip_list,
-                                 controller_ip_address,
-                                 controller_of_port,
-                                 switch_type,
-                                 mininet_topo_type,
-                                 mininet_topo_size,
-                                 mininet_group_size,
-                                 mininet_group_delay,
-                                 mininet_hosts_per_switch)
+multinet_requests.master_init(master_ip,
+                              master_port,
+                              controller_ip_address,
+                              controller_of_port,
+                              switch_type,
+                              topo_type,
+                              topo_size,
+                              group_size,
+                              group_delay,
+                              hosts_per_switch)
 ```
 
 ```python
 # Send a POST request to any master endpoint (except for 'init').
 # The endpoint is specified by the 'opcode' parameter
-mininet_handler_util.master_cmd(master_host,
-                                master_port,
-                                opcode,
-                                ip_list)
+multinet_requests.master_cmd(master_host, master_port, opcode)
 ```
 
 #### Core components
 
-- `MininetNetwork` class  
+- `Multinet` class  
   - Extends the `Mininet` class.  
   - Adds a dpid offset during the switch creation phase to distinguish between the switches in different instances.  
   - Inserts the notion of gradual switch bootup, inserting some idle time
     (`group_delay`) between the bootup of groups of switches (`group_size`)  
 - `worker`  
-  - creates its own `MininetNetwork` instance  
+  - creates its own `Multinet` instance  
   - creates a REST API that wraps the exposed methods of that instance.  
 - `master`  
   - exposes a REST API to the end user.  
@@ -479,22 +475,22 @@ def build(self, k=2, n=1, dpid=1, **_opts):
            for i in xrange(k):
                # Add switch
                switch = self.addSwitch(genSwitchName(i, dpid))
-              # Add hosts to switch
+               # Add hosts to switch
                for j in xrange(n):
                    host = self.addHost(genHostName(i, j, dpid, n))
                    self.addLink(host, switch)
  ```
 
-2. Add it to the `MininetNetwork.TOPOS` dictionary
+2. Add it to the `Multinet.TOPOS` dictionary
 
    ```python
    # worker.py
    import mytopo ...
-   MininetNetwork.TOPOS['mytopo'] = mytopo.MyTopo
-   MININET_TOPO = MininetNetwork( ... )
+   Multinet.TOPOS['mytopo'] = mytopo.MyTopo
+   MININET_TOPO = Multinet( ... )
    ```
    ```python
-   # or from inside MininetNetwork.py
+   # or from inside multinet.py
    TOPOS = {
       'linear': ...
       'mytopo': mytopo.MyTopo
