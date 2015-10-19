@@ -25,43 +25,39 @@ MININET_TOPO = None
 
 
 @bottle.route(
-    '/init/controller/<ip_address>/port/<port>/switch/<switch_type>/topology/<topo>/size/<size>/group/<group>/delay/<delay>/hosts/<hosts>/dpid/<dpid>',
+    '/init',
     method='POST')
-def init(ip_address, port, switch_type, topo, size, group, delay, hosts, dpid):
+def init():
     """
     Initializes a new topology object. The type of the new topology is
     defined by the topo parameter.
-
-    :param ip_address: controller IP address
-    :param port: controller OF port number
-    :param topo: type of the topology we want to start ("DisconnectedTopo",
-                 "LinearTopo", "MeshTopo")
-    :param size: initial number of switches to boot the topology with
-    :param group: group addition size
-    :paran delay: group addition delay (in milliseconds)
-    :param hosts: number of hosts per switch.
-    :param dpid: dpid offset of topology.
-    :type ip_address: str
-    :type port: int
-    :type topo: str
-    :type size: int
-    :type group: int
-    :type delay: int
-    :type hosts: int
-    :type dpid: int
+    Expects the topology configuration as JSON parameter.
+    
+    JSON entries:
+        controller_ip_address (str): The IP address of the controller
+        controller_of_port (int): The OpenFlow port of the controller
+        switch_type (str): The type of the soft switch used for the emulation
+        topo_type (str): The type of the topology
+        topo_size (int): The size of the topology
+        group_size (int): Size of groups for groupwise bootup
+        group_delay (int): Delay in ms before the bootup of each group
+        hosts_per_switch (int): The number of hosts per switch
+        dpid_offset (int): The dpid offset for this VM
     """
 
     global MININET_TOPO
+
+    topo_conf = bottle.request.json
     MININET_TOPO = Multinet(
-        ip_address,
-        int(port),
-        switch_type,
-        topo,
-        int(size),
-        int(group),
-        int(delay),
-        int(hosts),
-        int(dpid))
+        topo_conf['controller_ip_address'],
+        int(topo_conf['controller_of_port']),
+        topo_conf['switch_type'],
+        topo_conf['topo_type'],
+        int(topo_conf['topo_size']),
+        int(topo_conf['group_size']),
+        int(topo_conf['group_delay']),
+        int(topo_conf['hosts_per_switch']),
+        int(topo_conf['dpid_offset']))
     MININET_TOPO.init_topology()
 
 
@@ -89,8 +85,8 @@ def get_switches():
     Calls the get_switches() method of the current topology object to query the
     current number of switches.
 
-    :returns: number of switches of the topology
-    :rtype: int
+    Returns
+        int: number of switches of the topology
     """
 
     global MININET_TOPO

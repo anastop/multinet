@@ -24,9 +24,9 @@ WORKER_IP_LIST = []
 
 
 @bottle.route(
-	'/init/controller/<ip_address>/port/<port>/switch/<switch_type>/topology/<topo>/size/<size>/group/<group>/delay/<delay>/hosts/<hosts>',
+	'/init',
 	method='POST')
-def init(ip_address, port, topo, switch_type, size, group, delay, hosts):
+def init():
 	"""
 	Broadcast the POST request to the 'init' endpoint of the workers
 	Aggregate the responses
@@ -47,16 +47,12 @@ def init(ip_address, port, topo, switch_type, size, group, delay, hosts):
 	global WORKER_PORT
 	global WORKER_IP_LIST
 
-	reqs = m_util.broadcast_init(WORKER_IP_LIST,
-								 WORKER_PORT,
-								 ip_address,
-								 port,
-								 switch_type,
-								 topo,
-								 size,
-								 group,
-								 delay,
-								 hosts)
+    topo_conf = bottle.request.json
+	reqs = m_util.broadcast_cmd(WORKER_IP_LIST,
+								WORKER_PORT,
+								'init',
+								topo_conf)
+
 	stat, bod = m_util.aggregate_broadcast_response(reqs)
 	return bottle.HTTPResponse(status=stat, body=bod)
 
