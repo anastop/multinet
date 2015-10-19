@@ -41,7 +41,7 @@ amount of resources_?
   topologies distributed across multiple VMs
 - __Controllable boot-up__ of switches in groups of configurable size and
   configurable intermediate delay. This enables studying different policies of
-  connecting large-scale topologies to the controller.   
+  connecting large-scale topologies to the controller.
 - __Centralized__ and __RESTful__ control of topologies via a master-worker architecture
 - __Well-known topology types__ offered out-of-the-box (`disconnected`, `linear`,
   `ring`, `mesh`)
@@ -120,22 +120,22 @@ for this are:
    mh_vm_private_network_ip_mini = '10.1.1.70'  # the first IP Address in the mininet VMs IP Address range
    ```
 
-   _Optional Configuration_ 
+   _Optional Configuration_
    If you need port forwarding from the master guest machine to the
    host machine, edit these variables inside the `Vagrantfile`:  
-   
+
    ```rb
-   forwarded_ports_master = [] # A list of the ports the guest VM needs 
+   forwarded_ports_master = [] # A list of the ports the guest VM needs
                                # to forward
-   forwarded_ports_host = []   # The host ports where the guest ports will be 
+   forwarded_ports_host = []   # The host ports where the guest ports will be
                                # forwarded to (1 - 1 correspondence)
    # Example:
-   #   port 3300 from master VM will be forwarded to port 3300 of 
+   #   port 3300 from master VM will be forwarded to port 3300 of
    #   the host machine  
-   #   port 6634 from master VM will be forwarded to port 6635 of 
+   #   port 6634 from master VM will be forwarded to port 6635 of
    #   the host machine  
    #   forwarded_ports_master = [3300, 6634]  
-   #   forwarded_ports_host = [3300, 6635] 
+   #   forwarded_ports_host = [3300, 6635]
    ```
 
 3. Boot the VMs:
@@ -146,7 +146,10 @@ for this are:
 
 #### Deploy Multinet on the distributed environment
 
-__TODO__: high-level description of the deployment process, i.e. what it does in brief, from where it should be performed (e.g., from a machine that has access to all master/worker machines?)
+To deploy Multinet the user has to:
+ 1. Clone the Multinet repository in a folder inside his system
+ 2. Configure `config/config.json`
+ 3. Run `bin/deploy.py`  
 
 1. Configure the master / worker IP addresses and ports and the `deploy`
    options inside the `config/config.json`:
@@ -167,11 +170,7 @@ __TODO__: high-level description of the deployment process, i.e. what it does in
    }
    ```
 
-   - `multinet_base_dir` is the location inside the machines where deployment
-      files will be copied. This location is common for all participating machines
-
-__TODO__: this explanation is not valid, it needs clarification 
-
+   - `multinet_base_dir` is the location that the repository was cloned in the master node.
    - `master_ip` is the IP address of the machine where the master will run
    - `master_port` is the port where the master listens for REST requests
      from external client applications
@@ -182,23 +181,31 @@ __TODO__: this explanation is not valid, it needs clarification
    - `ssh_port` is the port where machines listen for SSH connections
    - `username`, `password` are the credentials used to access via SSH the machines
 
-2. Run the `deploy.py` script in the external user console to copy the 
+2. Run the `deploy.py` script in the external user console to copy the
    necessary files and start the master and the workers:
 
    ```bash
    [user@machine multinet/]$ bin/deploy --json-config config.json
    ```
 
+#### Clean machines from Multinet installation
+
+A dedicated script exist to revert the Multinet deployment. To clean the VMs of Multinet simply run: 
+
+```bash
+[user@machine multinet/]$ bin/deploy --json-config config.json
+```
+
 #### Initialize Multinet topologies
 
 _Gradual Bootup_
 
-We observed that the Opendaylight SDN controller displays some 
+We observed that the Opendaylight SDN controller displays some
 instability issues when it is overwhelmed with switch additions.  
 The solution we pose to this problem is the gradual switch bootup.  
 In more detail, we modified the Mininet `start` method as follows
 - We split the switches we need to start in groups
-- The size of each group is specified by the `group_size` parameter    
+- The size of each group is specified by the `group_size` parameter
 - We start the switches in each group normally  
 - After all the switches in a group have started we insert a delay  
 - The delay is specified by the `group_delay` parameter  
@@ -208,7 +215,7 @@ greater stability. Moreover it gives us a way to estimate the boot time of
 a topology in a deterministic way.
 
 
-1. Make sure the master / worker IP addresses and ports in the 
+1. Make sure the master / worker IP addresses and ports in the
    `config/config.json` file are properly configured. Then configure
    the `topo` options
 
@@ -228,14 +235,14 @@ a topology in a deterministic way.
    ```
 
 Where
-   - `controller_ip_address` is the IP address of the machine where the 
+   - `controller_ip_address` is the IP address of the machine where the
      controller will run
-   - `controller_of_port` is the port where the controller listens for 
+   - `controller_of_port` is the port where the controller listens for
      OpenFlow traffic
    - `switch_type` is the type of soft switch used for the emulation
    - `topo_type` is the type of topology to be booted
    - `topo_size` is the size of topology to be booted
-   - `group_size`, `group_delay` are the parameters defining the gradual 
+   - `group_size`, `group_delay` are the parameters defining the gradual
      bootup groups
    - `hosts_per_switch` is the number of hosts connected to each switch
 
@@ -247,7 +254,7 @@ Where
 
   This command sends an `init` command to every worker machine in parallel,
   and an identical Mininet topology will be built in each machine.  
-  If all the topologies are built successfully you should synchronously 
+  If all the topologies are built successfully you should synchronously
   get a `200 OK` response code.  
 
 
@@ -266,9 +273,9 @@ For example:
    ```
 
 This command should run __after__ the `init` command.  
-It sends a `start` command to every worker machine in parallel and boots the 
-topologies.    
-If all the topologies are booted successfully you should synchronously 
+It sends a `start` command to every worker machine in parallel and boots the
+topologies.
+If all the topologies are booted successfully you should synchronously
 get a `200 OK` response code.  
 
 
@@ -276,12 +283,12 @@ get a `200 OK` response code.
 
 ##### Make the hosts visible
 
-When we where using the Opendaylight controller, we observed that the 
+When we where using the Opendaylight controller, we observed that the
 hosts where not automatically visible on creation by the L2 switch plugin, rather they became visible when they generated traffic.  
-While this is a rather logical assumption, it has its limitations when 
-implementing automatic lifecycle management tools for the controller stress 
-testing. The solution we implemented is to perform a ping from each host to 
-send some `PACKET_IN` openflow packets to the controller in order to detect 
+While this is a rather logical assumption, it has its limitations when
+implementing automatic lifecycle management tools for the controller stress
+testing. The solution we implemented is to perform a ping from each host to
+send some `PACKET_IN` openflow packets to the controller in order to detect
 the hosts.  
 
 
@@ -298,12 +305,12 @@ For example:
    ```
 
 This command should run __after__ the `start` command.  
-It sends a `detect_hosts` command to every worker machine in parallel to make 
+It sends a `detect_hosts` command to every worker machine in parallel to make
 the hosts visible in the controller side.  
-If all the topologies are booted successfully you should synchronously 
+If all the topologies are booted successfully you should synchronously
 get a `200 OK` response code.  
-_Note_ that a `detect_hosts` operation may take a long time to complete if the 
-topology has many hosts. 
+_Note_ that a `detect_hosts` operation may take a long time to complete if the
+topology has many hosts.
 
 ##### Get the number of switches
 
@@ -320,10 +327,10 @@ For example:
    ```
 
 This command should run __after__ the `start` command.  
-It sends a `get_switches` command to every worker machine in parallel and 
-queries the number of bootes switches.    
-If the operation runs on a successfully booted topology you should 
-synchronously get a `200 OK` response code and the number of switches should 
+It sends a `get_switches` command to every worker machine in parallel and
+queries the number of bootes switches.
+If the operation runs on a successfully booted topology you should
+synchronously get a `200 OK` response code and the number of switches should
 be logged.  
 
 
@@ -343,11 +350,11 @@ For example:
 
 This command should run __after__ the `start` command.  
 It sends a `pingall` command to every worker machine in parallel and performs
-a pingall operation.    
-If the operation runs on a successfully booted topology you should 
-synchronously get a `200 OK` response code and the pingall output should 
+a pingall operation.
+If the operation runs on a successfully booted topology you should
+synchronously get a `200 OK` response code and the pingall output should
 be logged.  
-_Note_ that a `pingall` operation may take a long time to complete if the 
+_Note_ that a `pingall` operation may take a long time to complete if the
 topology has many hosts.  
 
 
@@ -366,9 +373,9 @@ For example:
    ```
 
 This command should run __after__ the `start` command.  
-It sends a `stop` command to every worker machine in parallel and destroys the 
-topologies.    
-If all the topologies are destroyed successfully you should synchronously 
+It sends a `stop` command to every worker machine in parallel and destroys the
+topologies.
+If all the topologies are destroyed successfully you should synchronously
 get a `200 OK` response code.  
 
 
@@ -380,8 +387,8 @@ this possible, every switch must have a unique DPID to avoid naming collisions
 in the controller's housekeeping mechanism, and to achieve this, Multinet
 automatically assigns a proper DPID offset to each Mininet topology.
 
-The local Mininet topologies are identical in terms of size, structure and 
-configuration, and they are all being handled in the same fashion simultaneously. 
+The local Mininet topologies are identical in terms of size, structure and
+configuration, and they are all being handled in the same fashion simultaneously.
 For example, during start up, topologies are being
 created simultaneously on the worker machines and populated in the same way. To
 relieve the end user from having to manage each topology separately, we have
@@ -424,7 +431,7 @@ with its topology on a separate machine.
 #### Interacting with the master programmatically
 
 To make the communication between the user, the master and the workers easier
-we designed the master (and the workers) as a REST server.   
+we designed the master (and the workers) as a REST server.
 The command line handlers are essentially wrapper scripts that perform POST requests to the REST API the master exposes.  
 
 Bellow we present a roadmap of the master API  
@@ -461,7 +468,7 @@ Bellow we present a roadmap of the master API
   @bottle.route('/get_switches', method='POST')
   ```
 
-You can also utilize the following wrapper functions from the 
+You can also utilize the following wrapper functions from the
 `multinet_requests` module
 
 ```python
