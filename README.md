@@ -123,22 +123,26 @@ for this are:
    _Optional Configuration_ 
    If you need port forwarding from the master guest machine to the
    host machine, edit these variables inside the `Vagrantfile`:  
-```rb
-forwarded_ports_master = [] # A list of the ports the guest VM needs to forward
-forwarded_ports_host = []   # The host ports where the guest ports will be 
-                            # forwarded to (1 - 1 correspondence)
-# Example:
-#   port 3300 from master VM will be forwarded to port 3300 of host machine  
-#   port 6634 from master VM will be forwarded to port 6635 of host machine  
-#   forwarded_ports_master = [3300, 6634]  
-#   forwarded_ports_host = [3300, 6635] 
-```
-
-3. Boot the VMs:
-
-   ```bash
-   vagrant up
+   
+   ```rb
+   forwarded_ports_master = [] # A list of the ports the guest VM needs 
+                               # to forward
+   forwarded_ports_host = []   # The host ports where the guest ports will be 
+                               # forwarded to (1 - 1 correspondence)
+   # Example:
+   #   port 3300 from master VM will be forwarded to port 3300 of 
+   #   the host machine  
+   #   port 6634 from master VM will be forwarded to port 6635 of 
+   #   the host machine  
+   #   forwarded_ports_master = [3300, 6634]  
+   #   forwarded_ports_host = [3300, 6635] 
    ```
+
+  3. Boot the VMs:
+
+     ```bash
+     vagrant up
+     ```
 
 #### Deploy Multinet on the distributed environment
 
@@ -402,9 +406,9 @@ with its topology on a separate machine.
 | `bin/deploy.py`     | Automation script to copy and start the master and the workers in the virtual machines |
 | `config/`           | configuration file for the handlers, the deployment and the master |
 | `figs/`             | Figures needed for documentation |
-| `multi`             | Module containing the Master / Worker REST servers |
-| `net`               | Module containing the Mininet related functionality |
-| `net/multinet`      | Class inheriting from the core `Mininet` with added / modified functionality |
+| `multi/`            | Module containing the Master / Worker REST servers |
+| `net/`              | Module containing the Mininet related functionality |
+| `net/multinet.py`   | Class inheriting from the core `Mininet` with added / modified functionality |
 | `net/topologies.py` | example topologies |  
 | `util/`             | Utility modules |
 | `vagrant/`          | Vagrantfiles for fast provisioning of a running environment |
@@ -412,7 +416,11 @@ with its topology on a separate machine.
 
 #### Interacting with the master programmatically
 
-The master exposes a REST API as described bellow
+To make the communication between the user, the master and the workers easier
+we designed the master (and the workers) as a REST server.   
+The command line handlers are essentially wrapper scripts that perform POST requests to the REST API the master exposes.  
+
+Bellow we present a roadmap of the master API  
 
 - Initialize the topologies  
   ```python
@@ -424,6 +432,11 @@ The master exposes a REST API as described bellow
 - Boot the topologies  
   ```python
   @bottle.route('/start', method='POST')
+  ```
+
+- Make the hosts visible to the controller  
+  ```python
+  @bottle.route('/detect_hosts', method='POST')
   ```
 
 - Stop the topologies  
