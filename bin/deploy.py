@@ -14,7 +14,7 @@ if __name__ == '__main__':
     ssh_port = conf['deploy']['ssh_port']
     worker_port = conf['worker_port']
     username = conf['deploy']['username']
-    password = conf['password']
+    password = conf['deploy']['password']
     worker_ips = conf['deploy']['worker_ip_list']
     multinet_base_dir = conf['deploy']['multinet_base_dir']
 
