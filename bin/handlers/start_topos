@@ -7,7 +7,7 @@ import util.multinet_requests as m_util
 
 
 def start_handler_main():
-   """Main
+    """Main
     Send a POST request to the master 'start' endpoint, 
     validate the response code and print the responses
 

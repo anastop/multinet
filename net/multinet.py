@@ -29,20 +29,20 @@ class Multinet(mininet.net.Mininet):
     group.
     """
 
-    TOPOS = {
     """
     name - class correspondence for the topologies
-    """
+    """ 
+    TOPOS = {
         'disconnected': net.topologies.DisconnectedTopo,
         'linear': net.topologies.LinearTopo,
         'ring': net.topologies.RingTopo,
         'mesh': net.topologies.MeshTopo
     }
 
-    SWITCH_CLASSES = {
     """
     name - class correspondence for the soft switches
     """
+    SWITCH_CLASSES = {
         'ovsk': mininet.node.OVSKernelSwitch,
         'user': mininet.node.UserSwitch
     }
@@ -118,20 +118,23 @@ class Multinet(mininet.net.Mininet):
         if not self.controllers and self.controller:
             # Add a default controller
             info('*** Adding controller\n')
-            classes = self.controller
-            if not isinstance(classes, list):
-                classes = [classes]
-            for i, cls in enumerate(classes):
-                # Allow Controller objects because nobody understands partial()
-                if isinstance(cls, mininet.node.Controller):
-                    self.addController(cls,
-                                       ip=self._controller_ip,
-                                       port=self._controller_port)
-                else:
-                    self.addController('c%d' % i,
-                                       cls,
-                                       ip=self._controller_ip,
-                                       port=self._controller_port)
+            try:
+                classes = self.controller
+                if not isinstance(classes, list):
+                    classes = [classes]
+                for i, cls in enumerate(classes):
+                    # Allow Controller objects because nobody understands partial()
+                    if isinstance(cls, mininet.node.Controller):
+                        self.addController(controller=cls,
+                                           ip=self._controller_ip,
+                                           port=self._controller_port)
+                    else:
+                        self.addController(name='c{0}'.format(i),
+                                           controller=cls,
+                                           ip=self._controller_ip,
+                                           port=self._controller_port)
+            except:
+                self.addController(name='c{0}'.format(i), controller=mininet.node.DefaultController)
 
         info('*** Adding hosts:\n')
         for hostName in topo.hosts():

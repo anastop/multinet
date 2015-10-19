@@ -216,7 +216,7 @@ def handle_post_request(post_call, exit_on_fail=True):
       post_call (requests.models.Response): The response to handle
       exit_on_fail (Optional[bool]): True -> Exit on error status code / False -> continue
     """
-    failed_post_call = post_call.status_code >= 300 or post_call.status < 200
+    failed_post_call = post_call.status_code >= 300 or post_call.status_code < 200
     if failed_post_call and exit_on_fail:
         sys.exit(post_call.status_code)
     else:

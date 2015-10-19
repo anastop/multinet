@@ -31,8 +31,11 @@ def start_mininet_server(mininet_ssh_session, mininet_server_remote_path,
     :type mininet_rest_server_port: int
     """
 
+    pythonpath = '/'.join(mininet_server_remote_path.split('/')[:-2])
+    logging.info('PYTHONPATH=%s' % pythonpath)
     boot_command = (
-        'sudo python {0} --rest-host {1} --rest-port {2} |& tee {0}_{1}_{2}_log.txt'. format(
+        'sudo PYTHONPATH={0} python {1} --rest-host {2} --rest-port {3} > {1}_{2}_{3}_log.txt 2>&1 &'. format(
+            pythonpath,
             mininet_server_remote_path,
             mininet_rest_server_host,
             mininet_rest_server_port))
@@ -68,8 +71,12 @@ def start_mininet_master(master_ssh_session, master_remote_path,
     TODO
     """
 
+    pythonpath = '/'.join(master_remote_path.split('/')[:-2])
+    logging.info('PYTHONPATH=%s' % pythonpath)
+ 
     boot_command = (
-        'sudo python {0} --json-config {1}  |& tee {0}_{1}_log.txt '. format(
+        'PYTHONPATH={0} python {1} --json-config {2} > /tmp/multinet/master_log.txt 2>&1 &'.format(
+            pythonpath,
             master_remote_path,
             config_file))
     util.netutil.ssh_run_command(master_ssh_session, boot_command)

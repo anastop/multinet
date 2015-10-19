@@ -10,7 +10,7 @@ import util.multinet_requests as m_util
 
 
 def detect_hosts_handler_main():
-   """Main
+    """Main
     Send a POST request to the master 'detect_hosts' endpoint, 
     validate the response code and print the responses
 
