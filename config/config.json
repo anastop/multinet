@@ -1,8 +1,8 @@
 {
-	"master_ip" : "10.1.1.80",
+	"master_ip" : "10.1.1.90",
 	"master_port": 3300,
 	"worker_port": 3333,
-	"worker_ip_list": ["10.1.1.80", "10.1.1.81"],
+	"worker_ip_list": ["10.1.1.90", "10.1.1.91"],
 
 	"deploy": {
 		"multinet_base_dir": "/home/vagrant/multinet",
