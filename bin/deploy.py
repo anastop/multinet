@@ -17,6 +17,8 @@ if __name__ == '__main__':
     password = conf['deploy']['password']
     worker_ips = conf['worker_ip_list']
     multinet_base_dir = conf['deploy']['multinet_base_dir']
+    #TODO hard-coded for now, fix later
+    config_file='/tmp/multinet/config/config.json'
 
     total_worker_machines = len(worker_ips)
 
@@ -40,9 +42,7 @@ if __name__ == '__main__':
 
     util.mininet_utils.start_mininet_master(ssh_sessions[master_ip],
                                             master_remote_path,
-                                            master_ip,
-                                            master_port,
-                                            worker_port)
+                                            config_file)
     for curr_ip in worker_ips:
         util.mininet_utils.start_mininet_worker(ssh_sessions[curr_ip],
                                                 mininet_server_remote_path,

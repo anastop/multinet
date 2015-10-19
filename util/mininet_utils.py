@@ -32,7 +32,7 @@ def start_mininet_server(mininet_ssh_session, mininet_server_remote_path,
     """
 
     boot_command = (
-        'sudo python {0} --rest-host {1} --rest-port {2} |& tee {0}:{1}:{2}_log.txt'. format(
+        'sudo python {0} --rest-host {1} --rest-port {2} |& tee {0}_{1}_{2}_log.txt'. format(
             mininet_server_remote_path,
             mininet_rest_server_host,
             mininet_rest_server_port))
@@ -63,17 +63,15 @@ def start_mininet_worker(mininet_ssh_session, mininet_server_remote_path,
 
 
 def start_mininet_master(master_ssh_session, master_remote_path,
-                         master_host, master_port, mininet_rest_server_port):
+                         config_file):
     """
     TODO
     """
 
     boot_command = (
-        'sudo python {0} --master-host {1} --master-port {2} --rest-port {3}  |& tee {0}:{1}:{2}_log.txt '. format(
+        'sudo python {0} --json-config {1}  |& tee {0}_{1}_log.txt '. format(
             master_remote_path,
-            master_host,
-            master_port,
-            mininet_rest_server_port))
+            config_file))
     util.netutil.ssh_run_command(master_ssh_session, boot_command)
     logging.debug('{0} {1}'.format('[start_mininet_server] Boot command: ',
                                    boot_command))
