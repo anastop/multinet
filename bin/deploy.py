@@ -7,21 +7,21 @@ if __name__ == '__main__':
 
     conf = m_util.parse_json_conf()
 
-    mininet_server_remote_path = '/tmp/multinet/worker.py'
-    master_remote_path = '/tmp/multinet/master.py'
+    mininet_server_remote_path = '/tmp/multinet/multi/worker.py'
+    master_remote_path = '/tmp/multinet/multi/master.py'
     master_ip = conf['master_ip']
     master_port = conf['master_port']
     ssh_port = conf['deploy']['ssh_port']
     worker_port = conf['worker_port']
     username = conf['deploy']['username']
     password = conf['deploy']['password']
-    worker_ips = conf['deploy']['worker_ip_list']
+    worker_ips = conf['worker_ip_list']
     multinet_base_dir = conf['deploy']['multinet_base_dir']
 
     total_worker_machines = len(worker_ips)
 
     ssh_sessions = {}
-    copy_dest_ips = worker_ips + master_ip
+    copy_dest_ips = worker_ips + [master_ip]
     for curr_ip in copy_dest_ips:
         print('Initiating session with Mininet VM.')
         session = util.netutil.ssh_connect_or_return(curr_ip, username,
@@ -35,7 +35,7 @@ if __name__ == '__main__':
         print('Copying handlers to Mininet VMs')
         util.netutil.copy_directory_to_target(curr_ip, username, password,
                                               multinet_base_dir,
-                                              '/tmp/multinet/',
+                                              '/tmp/',
                                               ssh_port)
 
     util.mininet_utils.start_mininet_master(ssh_sessions[master_ip],
