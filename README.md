@@ -82,22 +82,22 @@ for this are:
 1. Provision the base box from which VMs will be instantiated:
 
    ```bash
-   cd vagrant/base/
+   [user@machine multinet/]$ cd vagrant/base/
    ```
 
    If you sit behind a proxy, edit the `http_proxy` variable in the
    `Vagrantfile`. Then start provisioning:
 
    ```bash
-   vagrant up
+   [user@machine multinet/vagrant/base]$ vagrant up
    ```
 
    When the above command finishes, package the base box that has been created:
 
    ```bash
-   vagrant package --output mh-provisioned.box
-   vagrant box add mh-provisioned mh-provisioned.box
-   vagrant destroy
+   [user@machine multinet/vagrant/base]$ vagrant package --output mh-provisioned.box
+   [user@machine multinet/vagrant/base]$ vagrant box add mh-provisioned mh-provisioned.box
+   [user@machine multinet/vagrant/base]$ vagrant destroy
    ```
 
    For more info on Vagrant box packaging take a look at
@@ -106,7 +106,7 @@ for this are:
 2. Configure the VMs:
 
    ```bash
-   cd vagrant/packaged_multi/
+   [user@machine multinet/]$ cd vagrant/packaged_multi/
    ```
 
    Edit the `Vagrantfile` according to your preferences. For example:
@@ -138,10 +138,10 @@ for this are:
    #   forwarded_ports_host = [3300, 6635] 
    ```
 
-  3. Boot the VMs:
+3. Boot the VMs:
 
      ```bash
-     vagrant up
+     [user@machine multinet/vagrant/packaged_multi]$ vagrant up
      ```
 
 #### Deploy Multinet on the distributed environment
@@ -272,7 +272,18 @@ If all the topologies are booted successfully you should synchronously
 get a `200 OK` response code.  
 
 
-#### Make the hosts visible
+#### Interact with the topologies
+
+##### Make the hosts visible
+
+When we where using the Opendaylight controller, we observed that the 
+hosts where not automatically visible on creation by the L2 switch plugin, rather they became visible when they generated traffic.  
+While this is a rather logical assumption, it has its limitations when 
+implementing automatic lifecycle management tools for the controller stress 
+testing. The solution we implemented is to perform a ping from each host to 
+send some `PACKET_IN` openflow packets to the controller in order to detect 
+the hosts.  
+
 
 Run the following command inside the end user machine  
 
@@ -294,7 +305,7 @@ get a `200 OK` response code.
 _Note_ that a `detect_hosts` operation may take a long time to complete if the 
 topology has many hosts. 
 
-#### Get the number of switches
+##### Get the number of switches
 
 Run the following command inside the end user machine  
 
@@ -316,7 +327,7 @@ synchronously get a `200 OK` response code and the number of switches should
 be logged.  
 
 
-#### Do a pingall operation
+##### Do a pingall operation
 
 Run the following command inside the end user machine  
 
@@ -361,7 +372,6 @@ If all the topologies are destroyed successfully you should synchronously
 get a `200 OK` response code.  
 
 
-
 ## System Architecture
 
 The end goal of Multinet is to deploy a set of Mininet topologies over multiple
@@ -391,10 +401,7 @@ and reply to the user as soon as it has a complete global view.
 For resource efficiency and speed, it is preferable to create each worker along
 with its topology on a separate machine.
 
-
-
 ## Code Design
-
 
 #### Code structure
 
