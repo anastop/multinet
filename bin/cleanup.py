@@ -4,6 +4,9 @@ import time
 import logging
 
 def kill_remote_server(session, server_port):
+  #  get_pid = """sudo netstat -antup --numeric-ports | grep ':""" + \
+  #      str(server_port) + \
+  #      """ ' | awk '{print $NF}' | awk -F '/' '{print $1}'"""
     get_pid = 'sudo netstat -antup --numeric-ports | grep "%s" | awk \'{print $NF}\' | awk -F \'/\' \'{print $1}\'' % str(server_port)
     _, cmd_out, _ = util.netutil.ssh_run_command(session, get_pid)
     pid = str(cmd_out.read().decode()).strip().strip('-')
@@ -39,5 +42,4 @@ if __name__ == '__main__':
         util.netutil.ssh_run_command(session, 'sudo mn -c')
 
         print('Delete remote Multinet directory.')
-        util.netutil.remove_remote_directory(curr_ip, username, password,
-                                             '/tmp/multinet/', ssh_port)
+        util.netutil.ssh_run_command(session, 'rm -rf /tmp/multinet')
