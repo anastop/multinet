@@ -74,6 +74,15 @@ def start():
     MININET_TOPO.start_topology()
 
 
+@bottle.route('/detect_hosts', method='POST')
+def start():
+    """
+    Calls the detect_hosts() method of the current topology object to make
+    the hosts visible in the controller side
+    """
+    MININET_TOPO.detect_hosts()
+
+
 @bottle.route('/get_switches', method='POST')
 def get_switches():
     """
