@@ -10,7 +10,7 @@ def genHostName(i, j, dpid, n):
         i (int): The switch number
         j (int): The host number
         dpid (int): The dpid offset
-        n (int): The nuber of switches
+        n (int): The number of hosts per switch
 
     Returns:
         str: The host name
@@ -43,7 +43,7 @@ class LinearTopo(Topo):
             switch = self.addSwitch(genSwitchName(i, dpid))
             # Add hosts to switch
             for j in xrange(n):
-                host = self.addHost(genHostName(i, j, dpid, k))
+                host = self.addHost(genHostName(i, j, dpid, n))
                 self.addLink(host, switch)
             # Connect switch to previous
             if lastSwitch:

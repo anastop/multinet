@@ -70,7 +70,7 @@ if __name__ == '__main__':
         '[start master {0}] Boot command:  {1}'.format(
             master_ip,
             master_boot_command))
-    time.sleep(10)
+    time.sleep(1)
     for curr_ip in worker_ips:
         worker_boot_command = (
             'sudo PYTHONPATH={0} python {1} --rest-host {2} --rest-port {3} > {1}_{2}_{3}_log.txt 2>&1 &'. format(
@@ -84,4 +84,4 @@ if __name__ == '__main__':
             '[start worker {0}] Boot command: {1}'.format(
                 curr_ip,
                 worker_boot_command))
-        time.sleep(10)
+        time.sleep(1)
