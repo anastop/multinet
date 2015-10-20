@@ -244,6 +244,11 @@ class Multinet(mininet.net.Mininet):
         for h in self.hosts:
             h.sendInt()
         mininet.clean.cleanup()
+        self.switches = []
+        self.hosts = []
+        self.links = []
+        self.controllers = []
+        self.built = False
         logging.info('[mininet] Topology halted successfully')
 
     def ping_all(self):

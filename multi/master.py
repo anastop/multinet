@@ -23,9 +23,7 @@ WORKER_PORT = ''
 WORKER_IP_LIST = []
 
 
-@bottle.route(
-	'/init',
-	method='POST')
+@bottle.route('/init', method='POST')
 def init():
 	"""
 	Broadcast the POST request to the 'init' endpoint of the workers
@@ -47,11 +45,11 @@ def init():
 	global WORKER_PORT
 	global WORKER_IP_LIST
 
-    topo_conf = bottle.request.json
-	reqs = m_util.broadcast_cmd(WORKER_IP_LIST,
-								WORKER_PORT,
-								'init',
-								topo_conf)
+        logging.info('[ip list] {0}'.format(WORKER_IP_LIST))
+
+        topo_conf = bottle.request.json
+        logging.info(topo_conf)
+	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'init', topo_conf)
 
 	stat, bod = m_util.aggregate_broadcast_response(reqs)
 	return bottle.HTTPResponse(status=stat, body=bod)

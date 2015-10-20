@@ -89,7 +89,7 @@ def make_post_request(host_ip, host_port, route, data=None):
         post_call = session.post(url)
     else:
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        post_call = requests.post(
+        post_call = session.post(
             url,
             data=json.dumps(data),
             headers=headers)
