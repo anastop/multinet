@@ -284,7 +284,8 @@ get a `200 OK` response code.
 ##### Make the hosts visible
 
 When we where using the Opendaylight controller, we observed that the
-hosts where not automatically visible on creation by the L2 switch plugin, rather they became visible when they generated traffic.  
+hosts where not automatically visible on creation by the L2 switch plugin, 
+rather they became visible when they generated traffic.  
 While this is a rather logical assumption, it has its limitations when
 implementing automatic lifecycle management tools for the controller stress
 testing. The solution we implemented is to perform a ping from each host to
