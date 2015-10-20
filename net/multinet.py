@@ -77,6 +77,7 @@ class Multinet(mininet.net.Mininet):
         self.auto_detect_hosts = auto_detect_hosts
         self._controller_ip = controller_ip
         self._controller_port = controller_port
+        self.booted_switches = 0
 
         super(
             Multinet,
@@ -196,6 +197,7 @@ class Multinet(mininet.net.Mininet):
                           format(ind + 1))
             info(switch.name + ' ')
             switch.start(self.controllers)
+            self.booted_switches += 1
 
         started = {}
         for swclass, switches in itertools.groupby(
@@ -236,7 +238,7 @@ class Multinet(mininet.net.Mininet):
         Returns:
             (int): number of switches in the topology
         """
-        return len(self.switches)
+        return self.booted_switches
 
     def stop_topology(self):
         """
