@@ -7,7 +7,6 @@
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
 apt-get -y update
-apt-get install -y git python python-pypcap python-dpkt python-bottle
 git clone http://github.com/mininet/mininet $HOME/mininet
 cd $HOME/mininet && git checkout -b 2.2.1
 $HOME/mininet/util/install.sh -n3fv

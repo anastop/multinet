@@ -5,10 +5,10 @@
 	"worker_ip_list": ["127.0.0.1", "127.0.0.1"],
 
 	"deploy": {
-		"multinet_base_dir": "/tmp/base/multinet",
+		"multinet_base_dir": "",
 		"ssh_port": 22,
-		"username": "vagrant",
-		"password": "vagrant"
+		"username": "multinet",
+		"password": "multinet"
 	},
 
 	"topo": {

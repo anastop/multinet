@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
-python ../bin/deploy --json-config ./test-config.json
+export PYTHONPATH=`pwd`
 
-py.test
+python bin/deploy --json-config config/test-config.json
+echo
 
-python ../cleanup --json-config ./test-config.json
+py.test test/
+echo
+
+python bin/cleanup --json-config config/test-config.json
+echo

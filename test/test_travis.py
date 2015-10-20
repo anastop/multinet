@@ -2,12 +2,15 @@
 
 import json
 import util.multinet_requests as m_util
+import os
+import pytest
 
 @pytest.fixture
 def config():
     data = {}
-    with open('test-config.json') as test_config:
+    with open('config/test-config.json') as test_config:
         data = json.load(test_config)
+    data['multinet_base_dir'] = os.getcwd()
     return data
 
 

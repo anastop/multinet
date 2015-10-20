@@ -17,9 +17,13 @@ python:
 install: 
   - pip install -r requirements.txt
   - pip install -U pytest
-
-before_script:
   - sudo bash travis-jobs/install-mininet.sh
 
+before_script:
+  - sudo bash travis-jobs/create_user.sh
+  - sudo cp -r `pwd` /opt/
+
 script:
-  - sudo bash travis-jobs/test.sh
+  - PYTHONPATH=/opt/multinet bin/deploy --json-config config/test-config.json
+  - PYTHONPATH=/opt/multinet py.test test
+  - PYTHONPATH=/opt/multinet bin/cleanup --json-config config/test-config.json
