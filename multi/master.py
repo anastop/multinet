@@ -19,7 +19,7 @@ import util.multinet_requests as m_util
 # independently.
 logging.basicConfig(level=logging.DEBUG)
 
-WORKER_PORT = ''
+WORKER_PORT_LIST = []
 WORKER_IP_LIST = []
 
 
@@ -43,14 +43,14 @@ def init():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
 	"""
-	global WORKER_PORT
+	global WORKER_PORT_LIST
 	global WORKER_IP_LIST
 
         logging.info('[ip list] {0}'.format(WORKER_IP_LIST))
 
         topo_conf = bottle.request.json
         logging.info(topo_conf)
-	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'init', topo_conf)
+	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'init', topo_conf)
 
 	stat, bod = m_util.aggregate_broadcast_response(reqs)
 	return bottle.HTTPResponse(status=stat, body=bod)
@@ -66,10 +66,10 @@ def start():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
 	"""
-	global WORKER_PORT
+	global WORKER_PORT_LIST
 	global WORKER_IP_LIST
 
-	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'start')
+	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'start')
 	stat, bod = m_util.aggregate_broadcast_response(reqs)
 	return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -84,10 +84,10 @@ def start():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
 	"""
-	global WORKER_PORT
+	global WORKER_PORT_LIST
 	global WORKER_IP_LIST
 
-	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'detect_hosts')
+	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'detect_hosts')
 	stat, bod = m_util.aggregate_broadcast_response(reqs)
 	return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -102,10 +102,10 @@ def get_switches():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
 	"""
-	global WORKER_PORT
+	global WORKER_PORT_LIST
 	global WORKER_IP_LIST
 
-	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'get_switches')
+	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'get_switches')
 	stat, bod = m_util.aggregate_broadcast_response(reqs)
 	return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -120,10 +120,10 @@ def stop():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
 	"""
-	global WORKER_PORT
+	global WORKER_PORT_LIST
 	global WORKER_IP_LIST
 
-	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'stop')
+	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'stop')
 	stat, bod = m_util.aggregate_broadcast_response(reqs)
 	return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -138,10 +138,10 @@ def ping_all():
         requests.models.Response: An HTTP Response with the aggregated
         status codes and bodies of the broadcasted requests
 	"""
-	global WORKER_PORT
+	global WORKER_PORT_LIST
 	global WORKER_IP_LIST
 
-	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT, 'ping_all')
+	reqs = m_util.broadcast_cmd(WORKER_IP_LIST, WORKER_PORT_LIST, 'ping_all')
 	stat, bod = m_util.aggregate_broadcast_response(reqs)
 	return bottle.HTTPResponse(status=stat, body=bod)
 
@@ -150,7 +150,7 @@ def rest_start():
 	"""
 	Parse the command line arguments and start the master server
 	"""
-	global WORKER_PORT
+	global WORKER_PORT_LIST
 	global WORKER_IP_LIST
 
 	runtime_config = m_util.parse_json_conf()
@@ -158,7 +158,7 @@ def rest_start():
 	master_ip = runtime_config['master_ip']
 	master_port = runtime_config['master_port']
 	WORKER_IP_LIST = runtime_config['worker_ip_list']
-	WORKER_PORT = runtime_config['worker_port']
+	WORKER_PORT_LIST = runtime_config['worker_port_list']
 
 	bottle.run(host=master_ip, port=master_port, debug=True)
 

@@ -1,7 +1,7 @@
 {
 	"master_ip" : "10.1.1.90",
 	"master_port": 3300,
-	"worker_port": 3333,
+	"worker_port_list": [3333, 3333],
 	"worker_ip_list": ["10.1.1.90", "10.1.1.91"],
 
 	"deploy": {

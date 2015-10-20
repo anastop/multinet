@@ -120,7 +120,7 @@ def handle_post_request(post_call, exit_on_fail=True):
         logging.debug(post_call.text)
 
 
-def broadcast_cmd(worker_ip_list, worker_port, opcode, data=None):
+def broadcast_cmd(worker_ip_list, worker_port_list, opcode, data=None):
     """Broadcast a POST request to all the workers
     Use multiple processes to send POST requests to a specified
     endpoint of all the workers simultaneously.
@@ -141,7 +141,7 @@ def broadcast_cmd(worker_ip_list, worker_port, opcode, data=None):
     processes = []
     result_queue = multiprocessing.Queue()
 
-    for worker_ip in worker_ip_list:
+    for worker_ip, worker_port in zip(worker_ip_list, worker_port_list):
         if opcode == 'init':
             data['dpid_offset'] = dpid_offset_list[offset_idx]
             offset_idx += 1
