@@ -1,3 +1,10 @@
+# Copyright (c) 2015 Intracom S.A. Telecom Solutions. All rights reserved.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Eclipse Public License v1.0 which accompanies this distribution,
+# and is available at http://www.eclipse.org/legal/epl-v10.html
+
+
 sudo: required
 dist: trusty
 
@@ -10,8 +17,10 @@ python:
 # command to install dependencies
 install: 
   - pip install -r requirements.txt
+  - pip install -U pytest
 
 before_script:
-  - travis-jobs/install-mininet.sh
+  - sudo bash travis-jobs/install-mininet.sh
 
-
+script:
+  - sudo bash travis-jobs/test.sh
