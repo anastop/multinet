@@ -1,10 +1,31 @@
+"""
+Modified Topologies created with the High Level Mininet API
+"""
 from mininet.topo import Topo
 
 
 def genHostName(i, j, dpid, n):
+    """Generate the host name
+    Args:
+        i (int): The switch number
+        j (int): The host number
+        dpid (int): The dpid offset
+        n (int): The nuber of switches
+
+    Returns:
+        str: The host name
+    """
     return 'h%d' % (j + i*n + dpid)
 
 def genSwitchName(i, dpid):
+    """Generate the switch name
+    Args:
+        i (int): The switch number
+        dpid (int): The dpid offset
+
+    Returns:
+        str: The switch name
+    """
     return 's%d' % (i + dpid)
 
 class LinearTopo(Topo):

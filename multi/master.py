@@ -40,7 +40,8 @@ def init():
 	  hosts_per_switch (int): The number of hosts connected to each switch
 
 	Returns:
-	  list: A list of responses for all the POST requests performed
+        requests.models.Response: An HTTP Response with the aggregated
+        status codes and bodies of the broadcasted requests
 	"""
 	global WORKER_PORT
 	global WORKER_IP_LIST
@@ -60,6 +61,10 @@ def start():
 	"""
 	Broadcast the POST request to the 'start' endpoint of the workers
 	Aggregate the responses
+
+	Returns:
+        requests.models.Response: An HTTP Response with the aggregated
+        status codes and bodies of the broadcasted requests
 	"""
 	global WORKER_PORT
 	global WORKER_IP_LIST
@@ -74,6 +79,10 @@ def start():
 	"""
 	Broadcast the POST request to the 'detect_hosts' endpoint of the workers
 	Aggregate the responses
+
+	Returns:
+        requests.models.Response: An HTTP Response with the aggregated
+        status codes and bodies of the broadcasted requests
 	"""
 	global WORKER_PORT
 	global WORKER_IP_LIST
@@ -88,6 +97,10 @@ def get_switches():
 	"""
 	Broadcast the POST request to the 'get_switches' endpoint of the workers
 	Aggregate the responses
+
+	Returns:
+        requests.models.Response: An HTTP Response with the aggregated
+        status codes and bodies of the broadcasted requests
 	"""
 	global WORKER_PORT
 	global WORKER_IP_LIST
@@ -102,6 +115,10 @@ def stop():
 	"""
 	Broadcast the POST request to the 'stop' endpoint of the workers
 	Aggregate the responses
+
+	Returns:
+        requests.models.Response: An HTTP Response with the aggregated
+        status codes and bodies of the broadcasted requests
 	"""
 	global WORKER_PORT
 	global WORKER_IP_LIST
@@ -116,6 +133,10 @@ def ping_all():
 	"""
 	Broadcast the POST request to the 'ping_all' endpoint of the workers
 	Aggregate the responses
+
+	Returns:
+        requests.models.Response: An HTTP Response with the aggregated
+        status codes and bodies of the broadcasted requests
 	"""
 	global WORKER_PORT
 	global WORKER_IP_LIST

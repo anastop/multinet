@@ -1,3 +1,7 @@
+"""
+Multinet utility functions to communicate with the master and the worker machines
+"""
+
 import requests
 import sys
 import multiprocessing
@@ -37,22 +41,6 @@ def parse_json_conf():
     return conf
 
 
-def ip_range(start_ip, num_ips):
-    """Generate a number of consecutive ip addresses
-    Assume the ip range fits in one subnet
-
-    Args:
-      start_ip (str): The starting IP in the range
-      num_ips (int): The number of consecutive IP addresses to generate
-
-    Returns:
-      list: The list of consecutive IP addresses
-    """
-    ip_split = start_ip.split('.')
-    ip_pref, ip_suf = ip_split[:-1], int(ip_split[-1])
-    return ['.'.join(ip_pref + [str(ip_suf + i)]) for i in xrange(0, num_ips)]
-
-
 def dpid_offset_range(num_vms):
     """Generate a range of dpid dpid_offset_list
     Every VM has allocates 1000 unique dpid offsets
@@ -74,7 +62,7 @@ def make_post_request(host_ip, host_port, route, data=None):
       host_ip (str): The ip of the remote REST server
       host_port (int): The port of the remote REST server
       route (str): The REST API endpoint
-      data (dict or list): A dictionary or a list with any additional data
+      data (dict): A dictionary or a list with any additional data
 
     Returns:
       requests.models.Response: The HTTP response for the performed request

@@ -4,7 +4,10 @@
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-"""Support for customized booting of Mininet topologies"""
+"""
+Builds on Mininet to emulate large-scale SDN networks
+by creating distributed Mininet topologies
+"""
 
 import logging
 import time

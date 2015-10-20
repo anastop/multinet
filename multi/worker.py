@@ -6,7 +6,7 @@
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-"""With this module re start the REST mininet server, that manages a mininet
+"""With this module we start the REST mininet server, that manages a mininet
 topology"""
 
 import argparse
@@ -86,11 +86,11 @@ def get_switches():
     current number of switches.
 
     Returns
-        int: number of switches of the topology
+        str: A JSON string with dpid_offset/number_of_switches key/value pairs
     """
 
     global MININET_TOPO
-    return json.dumps(MININET_TOPO.get_switches())
+    return json.dumps({'dpid-{0}'.format(MININET_TOPO._dpid_offset): MININET_TOPO.get_switches()})
 
 
 @bottle.route('/stop', method='POST')
@@ -113,29 +113,6 @@ def ping_all():
 
     global MININET_TOPO
     MININET_TOPO.ping_all()
-
-
-@bottle.route('/ping_line_pair/host1/<host1>/host2/<host2>', method='POST')
-def ping_line_pair(host1, host2):
-    """
-    Calls the ping_all() method of the current topology object to issue
-    all-to-all ping commands
-    """
-    global MININET_TOPO
-
-    def hostName(host):
-        parsed = [int(x) for x in host.split(',')]
-        sw, port = parsed[0], parsed[1]
-        return net.topologies.genHostName(sw,
-                                      port,
-                                      MININET_TOPO._dpid_offset,
-                                      MININET_TOPO._num_switches)
-
-    h1, h2 = hostName(host1), hostName(host2)
-
-    ploss = MININET_TOPO.ping([h1, h2])
-    status = 200 if not ploss == 100 else 500
-    return bottle.HTTPResponse(status=status, body='')
 
 
 def rest_start():
