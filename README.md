@@ -363,7 +363,7 @@ topology has many hosts.
 Run the following command inside the end user machine  
 
    ```bash
-   [user@machine multinet/]$ bin/handlers/stop_topos --json-config config/config.json
+   [user@machine multinet/]$ bin/handlers/stop_topos --json-config <path-to-config-file>
    ```
 
 For example:
