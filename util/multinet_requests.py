@@ -1,3 +1,7 @@
+"""
+Multinet utility functions to communicate with the master and the worker machines
+"""
+
 import requests
 import sys
 import multiprocessing
@@ -37,22 +41,6 @@ def parse_json_conf():
     return conf
 
 
-def ip_range(start_ip, num_ips):
-    """Generate a number of consecutive ips
-    Assume the ip range fits in one subnet
-
-    Args:
-      start_ip (str): The starting IP in the range
-      num_ips (int): The number of consecutive IP addresses to generate
-
-    Returns:
-      list: The list of consecutive IP addresses
-    """
-    ip_split = start_ip.split('.')
-    ip_pref, ip_suf = ip_split[:-1], int(ip_split[-1])
-    return ['.'.join(ip_pref + [str(ip_suf + i)]) for i in xrange(0, num_ips)]
-
-
 def dpid_offset_range(num_vms):
     """Generate a range of dpid dpid_offset_list
     Every VM has allocates 1000 unique dpid offsets
@@ -74,7 +62,7 @@ def make_post_request(host_ip, host_port, route, data=None):
       host_ip (str): The ip of the remote REST server
       host_port (int): The port of the remote REST server
       route (str): The REST API endpoint
-      data (dict or list): A dictionary or a list with any additional data
+      data (dict): A dictionary or a list with any additional data
 
     Returns:
       requests.models.Response: The HTTP response for the performed request
@@ -89,7 +77,7 @@ def make_post_request(host_ip, host_port, route, data=None):
         post_call = session.post(url)
     else:
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        post_call = requests.post(
+        post_call = session.post(
             url,
             data=json.dumps(data),
             headers=headers)
@@ -99,53 +87,6 @@ def make_post_request(host_ip, host_port, route, data=None):
           format(route_name, post_call.text))
 
     return post_call
-
-
-def init_topology(worker_host_ip,
-                  worker_port,
-                  controller_ip_address,
-                  controller_of_port,
-                  switch_type,
-                  topo_type,
-                  topo_size,
-                  group_size,
-                  group_delay,
-                  hosts_per_switch,
-                  dpid_offset):
-    """Initialize a Multinet topology
-    Make a POST request at the 'init' endpoint of a worker
-
-    Args:
-      worker_host_ip (str): The IP address of the worker
-      worker_port (int): The port of the worker
-      controller_ip_address (str): The IP address of the controller
-      controller_of_port (int): The OpenFlow port of the controller
-      switch_type (str): The type of soft switch to use for the emulation
-      topo_type (str): The type of the topology we want to build
-      topo_size (int): The size of the topology we want to build
-      group_size (int): The number of switches in a gorup for gradual bootup
-      group_delay (int): The delay between the bootup of each group
-      hosts_per_switch (int): The number of hosts connected to each switch
-      dpid_offset (int): The dpid offset of this worker
-
-    Returns:
-      requests.models.Response: The HTTP response for the performed request
-    """
-    route = (
-        'init/controller/{0}/port/'
-        '{1}/switch/{2}/topology/{3}/size/{4}/group/{5}/delay/{6}/hosts/{7}/dpid/{8}'.
-        format(
-            controller_ip_address,
-            controller_of_port,
-            switch_type,
-            topo_type,
-            topo_size,
-            group_size,
-            group_delay,
-            hosts_per_switch,
-            dpid_offset))
-
-    return make_post_request(worker_host_ip, worker_port, route)
 
 
 def make_post_request_runner(host_ip, host_port, route, data, queue):
@@ -161,50 +102,6 @@ def make_post_request_runner(host_ip, host_port, route, data, queue):
       queue (multiprocessing.Queue): The queue where all the responses are stored
     """
     queue.put(make_post_request(host_ip, host_port, route, data))
-
-
-def init_topology_runner(worker_host_ip,
-                         worker_port,
-                         controller_ip_address,
-                         controller_of_port,
-                         switch_type,
-                         topo_type,
-                         topo_size,
-                         group_size,
-                         group_delay,
-                         hosts_per_switch,
-                         dpid_offset,
-                         queue):
-    """Wrapper function to create a new job for each init POST request
-    Make an init POST request and put the response in a queue.
-    Used for multiprocessing.
-
-    Args:
-      worker_host_ip (str): The IP address of the worker
-      worker_port (int): The port of the worker
-      controller_ip_address (str): The IP address of the controller
-      controller_of_port (int): The OpenFlow port of the controller
-      switch_type (str): The type of soft switch to use for the emulation
-      topo_type (str): The type of the topology we want to build
-      topo_size (int): The size of the topology we want to build
-      group_size (int): The number of switches in a gorup for gradual bootup
-      group_delay (int): The delay between the bootup of each group
-      hosts_per_switch (int): The number of hosts connected to each switch
-      dpid_offset (int): The dpid offset of this worker
-      queue (multiprocessing.Queue): The queue where all the responses are stored
-    """
-    queue.put(init_topology(worker_host_ip,
-                            worker_port,
-                            controller_ip_address,
-                            controller_of_port,
-                            switch_type,
-                            topo_type,
-                            topo_size,
-                            group_size,
-                            group_delay,
-                            hosts_per_switch,
-                            dpid_offset))
-
 
 
 def handle_post_request(post_call, exit_on_fail=True):
@@ -223,68 +120,7 @@ def handle_post_request(post_call, exit_on_fail=True):
         logging.debug(post_call.text)
 
 
-def broadcast_init(worker_ip_list,
-                   worker_port,
-                   controller_ip_address,
-                   controller_of_port,
-                   switch_type,
-                   topo_type,
-                   topo_size,
-                   group_size,
-                   group_delay,
-                   hosts_per_switch):
-    """Broadcast an init POST request to all the workers
-    Use multiple processes to send POST requests to the 'init' 
-    endpoint of all the workers simultaneously.
-    The dpid offset is infered automatically 
-    
-    Args:
-      worker_ip_list (list): A list of IP addresses to broadcast the POST request
-      worker_port (int): The port of the workers
-      controller_ip_address (str): The IP address of the controller
-      controller_of_port (int): The OpenFlow port of the controller
-      switch_type (str): The type of soft switch to use for the emulation
-      topo_type (str): The type of the topology we want to build
-      topo_size (int): The size of the topology we want to build
-      group_size (int): The number of switches in a gorup for gradual bootup
-      group_delay (int): The delay between the bootup of each group
-      hosts_per_switch (int): The number of hosts connected to each switch
-
-    Returns:
-      list: A list of responses for all the POST requests performed
-    """
-    dpid_offset_list = dpid_offset_range(len(worker_ip_list))
-    offset_idx = 0
-    processes = []
-    result_queue = multiprocessing.Queue()
-
-    for worker_host_ip in worker_ip_list:
-        dpid_offset = dpid_offset_list[offset_idx]
-        offset_idx += 1
-        process = multiprocessing.Process(target=init_topology_runner,
-                                          args=(worker_host_ip,
-                                                worker_port,
-                                                controller_ip_address,
-                                                controller_of_port,
-                                                switch_type,
-                                                topo_type,
-                                                topo_size,
-                                                group_size,
-                                                group_delay,
-                                                hosts_per_switch,
-                                                dpid_offset,
-                                                result_queue,))
-        process.start()
-        processes.append(process)
-
-    for process in processes:
-        process.join()
-        time.sleep(1)
-
-    return [result_queue.get() for _ in processes]
-
-
-def broadcast_cmd(worker_ip_list, worker_port, opcode):
+def broadcast_cmd(worker_ip_list, worker_port, opcode, data=None):
     """Broadcast a POST request to all the workers
     Use multiple processes to send POST requests to a specified
     endpoint of all the workers simultaneously.
@@ -293,15 +129,23 @@ def broadcast_cmd(worker_ip_list, worker_port, opcode):
       worker_ip_list (list): A list of IP addresses to broadcast the POST request
       worker_port (int): The port of the workers
       opcode (str): The REST API endpoint
+      data (dict): JSON data to go with the request
 
     Returns:
       list: A list of responses for all the POST requests performed
     """
+    if opcode == 'init':
+        dpid_offset_list = dpid_offset_range(len(worker_ip_list))
+        offset_idx = 0
+
     processes = []
     result_queue = multiprocessing.Queue()
 
     for worker_ip in worker_ip_list:
-        data = None
+        if opcode == 'init':
+            data['dpid_offset'] = dpid_offset_list[offset_idx]
+            offset_idx += 1
+
         process = multiprocessing.Process(target=make_post_request_runner,
                                           args=(worker_ip,
                                                 worker_port,
@@ -336,49 +180,7 @@ def aggregate_broadcast_response(responses):
     return status, body
 
 
-def master_init(master_ip,
-                master_port,
-                controller_ip_address,
-                controller_of_port,
-                switch_type,
-                topo_type,
-                topo_size,
-                group_size,
-                group_delay,
-                hosts_per_switch):
-    """Wrapper function to make an init POST request to the master
-
-    Args:
-      master_ip (str): The IP address of the master
-      master_port (int): The port of the master
-      controller_ip_address (str): The IP address of the controller
-      controller_of_port (int): The OpenFlow port of the controller
-      switch_type (str): The type of soft switch to use for the emulation
-      topo_type (str): The type of the topology we want to build
-      topo_size (int): The size of the topology we want to build
-      group_size (int): The number of switches in a gorup for gradual bootup
-      group_delay (int): The delay between the bootup of each group
-      hosts_per_switch (int): The number of hosts connected to each switch
-
-    Returns:
-      requests.models.Response: The HTTP response for the performed request
-    """
-    route = (
-        'init/controller/{0}/port/'
-        '{1}/switch/{2}/topology/{3}/size/{4}/group/{5}/delay/{6}/hosts/{7}'. format(
-            controller_ip_address,
-            controller_of_port,
-            switch_type,
-            topo_type,
-            topo_size,
-            group_size,
-            group_delay,
-            hosts_per_switch))
-
-    return make_post_request(master_ip, master_port, route)
-
-
-def master_cmd(master_ip, master_port, opcode):
+def master_cmd(master_ip, master_port, opcode, data=None):
     """Wrapper function to send a command to the master
 
     Args:
@@ -389,4 +191,4 @@ def master_cmd(master_ip, master_port, opcode):
     Returns:
       requests.models.Response: The HTTP response for the performed request
     """
-    return make_post_request(master_ip, master_port, opcode)
+    return make_post_request(master_ip, master_port, opcode, data)

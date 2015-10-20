@@ -6,7 +6,7 @@
 # terms of the Eclipse Public License v1.0 which accompanies this distribution,
 # and is available at http://www.eclipse.org/legal/epl-v10.html
 
-"""With this module re start the REST mininet server, that manages a mininet
+"""With this module we start the REST mininet server, that manages a mininet
 topology"""
 
 import argparse
@@ -25,43 +25,39 @@ MININET_TOPO = None
 
 
 @bottle.route(
-    '/init/controller/<ip_address>/port/<port>/switch/<switch_type>/topology/<topo>/size/<size>/group/<group>/delay/<delay>/hosts/<hosts>/dpid/<dpid>',
+    '/init',
     method='POST')
-def init(ip_address, port, switch_type, topo, size, group, delay, hosts, dpid):
+def init():
     """
     Initializes a new topology object. The type of the new topology is
     defined by the topo parameter.
-
-    :param ip_address: controller IP address
-    :param port: controller OF port number
-    :param topo: type of the topology we want to start ("DisconnectedTopo",
-                 "LinearTopo", "MeshTopo")
-    :param size: initial number of switches to boot the topology with
-    :param group: group addition size
-    :paran delay: group addition delay (in milliseconds)
-    :param hosts: number of hosts per switch.
-    :param dpid: dpid offset of topology.
-    :type ip_address: str
-    :type port: int
-    :type topo: str
-    :type size: int
-    :type group: int
-    :type delay: int
-    :type hosts: int
-    :type dpid: int
+    Expects the topology configuration as JSON parameter.
+    
+    JSON entries:
+        controller_ip_address (str): The IP address of the controller
+        controller_of_port (int): The OpenFlow port of the controller
+        switch_type (str): The type of the soft switch used for the emulation
+        topo_type (str): The type of the topology
+        topo_size (int): The size of the topology
+        group_size (int): Size of groups for groupwise bootup
+        group_delay (int): Delay in ms before the bootup of each group
+        hosts_per_switch (int): The number of hosts per switch
+        dpid_offset (int): The dpid offset for this VM
     """
 
     global MININET_TOPO
+
+    topo_conf = bottle.request.json
     MININET_TOPO = Multinet(
-        ip_address,
-        int(port),
-        switch_type,
-        topo,
-        int(size),
-        int(group),
-        int(delay),
-        int(hosts),
-        int(dpid))
+        topo_conf['controller_ip_address'],
+        int(topo_conf['controller_of_port']),
+        topo_conf['switch_type'],
+        topo_conf['topo_type'],
+        int(topo_conf['topo_size']),
+        int(topo_conf['group_size']),
+        int(topo_conf['group_delay']),
+        int(topo_conf['hosts_per_switch']),
+        int(topo_conf['dpid_offset']))
     MININET_TOPO.init_topology()
 
 
@@ -89,12 +85,12 @@ def get_switches():
     Calls the get_switches() method of the current topology object to query the
     current number of switches.
 
-    :returns: number of switches of the topology
-    :rtype: int
+    Returns
+        str: A JSON string with dpid_offset/number_of_switches key/value pairs
     """
 
     global MININET_TOPO
-    return json.dumps(MININET_TOPO.get_switches())
+    return json.dumps({'dpid-{0}'.format(MININET_TOPO._dpid_offset): MININET_TOPO.get_switches()})
 
 
 @bottle.route('/stop', method='POST')
@@ -117,29 +113,6 @@ def ping_all():
 
     global MININET_TOPO
     MININET_TOPO.ping_all()
-
-
-@bottle.route('/ping_line_pair/host1/<host1>/host2/<host2>', method='POST')
-def ping_line_pair(host1, host2):
-    """
-    Calls the ping_all() method of the current topology object to issue
-    all-to-all ping commands
-    """
-    global MININET_TOPO
-
-    def hostName(host):
-        parsed = [int(x) for x in host.split(',')]
-        sw, port = parsed[0], parsed[1]
-        return net.topologies.genHostName(sw,
-                                      port,
-                                      MININET_TOPO._dpid_offset,
-                                      MININET_TOPO._num_switches)
-
-    h1, h2 = hostName(host1), hostName(host2)
-
-    ploss = MININET_TOPO.ping([h1, h2])
-    status = 200 if not ploss == 100 else 500
-    return bottle.HTTPResponse(status=status, body='')
 
 
 def rest_start():

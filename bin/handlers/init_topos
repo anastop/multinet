@@ -27,16 +27,10 @@ def master_init_main():
     """
     conf = m_util.parse_json_conf()
     
-    res = m_util.master_init(conf['master_ip'],
+    res = m_util.master_cmd(conf['master_ip'],
                              conf['master_port'],
-                             conf['topo']['controller_ip_address'],
-                             conf['topo']['controller_of_port'],
-                             conf['topo']['switch_type'],
-                             conf['topo']['topo_type'],
-                             conf['topo']['topo_size'],
-                             conf['topo']['group_size'],
-                             conf['topo']['group_delay'],
-                             conf['topo']['hosts_per_switch'])
+                             'init',
+                             conf['topo'])
 
     m_util.handle_post_request(res, exit_on_fail=True)
 
