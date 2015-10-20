@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/intracom-telecom-sdn/multinet/badges/gpa.svg)](https://codeclimate.com/github/intracom-telecom-sdn/multinet)
+
 # Multinet
 
 The goal of Multinet is to provide a fast, controlled and resource-efficient way
