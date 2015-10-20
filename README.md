@@ -438,9 +438,22 @@ Bellow we present a roadmap of the master API
 
 - Initialize the topologies  
   ```python
-  @bottle.route(
-    '/init/controller/<ip_address>/port/<port>/switch/<switch_type>/topology/<topo>/size/<size>/group/<group>/delay/<delay>/hosts/<hosts>',
-    method='POST')
+  @bottle.route('/init', method='POST')
+  ```
+  When making a POST request to the `init` endpoint, you must also send a JSON
+  body with the following format (also see the 
+  [Initialize Multinet topologies](#initialize-multinet-topologies) section)  
+  ```json
+  {
+        "controller_ip_address":"10.1.1.39",
+        "controller_of_port":6653,
+        "switch_type":"ovsk",
+        "topo_type":"linear",
+        "topo_size":30,
+        "group_size":3,
+        "group_delay":100,
+        "hosts_per_switch":2
+  }
   ```
 
 - Boot the topologies  
