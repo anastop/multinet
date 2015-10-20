@@ -217,7 +217,7 @@ A dedicated script exist to revert the Multinet deployment. To clean the VMs of 
    }
    ```
 
-Where
+   Where
    - `controller_ip_address` is the IP address of the machine where the
      controller will run
    - `controller_of_port` is the port where the controller listens for
@@ -479,33 +479,39 @@ Bellow we present a roadmap of the master API
   @bottle.route('/get_switches', method='POST')
   ```
 
-You can also utilize the following wrapper functions from the
-`multinet_requests` module
+You can also utilize the wrappers from the `multinet_requests` module
 
-```python
-# Send a POST request to the master 'init' endpoint
+Example:  
 
-topo_data= {
-    "controller_ip_address":"10.1.1.39",
-    "controller_of_port":6653,
-    "switch_type":"ovsk",
-    "topo_type":"linear",
-    "topo_size":30,
-    "group_size":3,
-    "group_delay":100,
-    "hosts_per_switch":2
-}
-multinet_requests.master_cmd(master_ip,
-                             master_port,
-                             'init',
-                             data=topo_data)
-```
+1. For `init`
+   ```python
+   # Send a POST request to the master 'init' endpoint
 
-```python
-# Send a POST request to any master endpoint
-# The endpoint is specified by the 'opcode' parameter
-multinet_requests.master_cmd(master_ip, master_port, opcode)
-```
+   topo_data= {
+       "controller_ip_address":"10.1.1.39",
+       "controller_of_port":6653,
+       "switch_type":"ovsk",
+       "topo_type":"linear",
+       "topo_size":30,
+       "group_size":3,
+       "group_delay":100,
+       "hosts_per_switch":2
+   }
+   
+   multinet_requests.master_cmd(master_ip,
+                                master_port,
+                                'init',
+                                data=topo_data)
+   ```
+
+2. And for any other operation
+   ```python
+   # Send a POST request to any master endpoint
+   # The endpoint is specified by the 'opcode' parameter
+   
+   opcode = choose_one_of(['start', 'get_switches', 'ping_all', 'detect_hosts', 'stop'])
+   multinet_requests.master_cmd(master_ip, master_port, opcode)
+   ```
 
 #### Core components
 
