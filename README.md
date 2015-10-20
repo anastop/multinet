@@ -198,23 +198,6 @@ A dedicated script exist to revert the Multinet deployment. To clean the VMs of 
 
 #### Initialize Multinet topologies
 
-_Gradual Bootup_
-
-We observed that the Opendaylight SDN controller displays some
-instability issues when it is overwhelmed with switch additions.  
-The solution we pose to this problem is the gradual switch bootup.  
-In more detail, we modified the Mininet `start` method as follows
-- We split the switches we need to start in groups
-- The size of each group is specified by the `group_size` parameter
-- We start the switches in each group normally  
-- After all the switches in a group have started we insert a delay  
-- The delay is specified by the `group_delay` parameter  
-
-We have observed that this method allows us to boot larger topologies with
-greater stability. Moreover it gives us a way to estimate the boot time of
-a topology in a deterministic way.
-
-
 1. Make sure the master / worker IP addresses and ports in the
    `config/config.json` file are properly configured. Then configure
    the `topo` options
@@ -257,6 +240,21 @@ Where
   If all the topologies are built successfully you should synchronously
   get a `200 OK` response code.  
 
+_Gradual Bootup_
+
+We observed that the Opendaylight SDN controller displays some
+instability issues when it is overwhelmed with switch additions.  
+The solution we pose to this problem is the gradual switch bootup.  
+In more detail, we modified the Mininet `start` method as follows
+- We split the switches we need to start in groups
+- The size of each group is specified by the `group_size` parameter
+- We start the switches in each group normally  
+- After all the switches in a group have started we insert a delay  
+- The delay is specified by the `group_delay` parameter  
+
+We have observed that this method allows us to boot larger topologies with
+greater stability. Moreover it gives us a way to estimate the boot time of
+a topology in a deterministic way.
 
 #### Start Multinet topologies
 
@@ -486,22 +484,27 @@ You can also utilize the following wrapper functions from the
 
 ```python
 # Send a POST request to the master 'init' endpoint
-multinet_requests.master_init(master_ip,
-                              master_port,
-                              controller_ip_address,
-                              controller_of_port,
-                              switch_type,
-                              topo_type,
-                              topo_size,
-                              group_size,
-                              group_delay,
-                              hosts_per_switch)
+
+topo_data= {
+    "controller_ip_address":"10.1.1.39",
+    "controller_of_port":6653,
+    "switch_type":"ovsk",
+    "topo_type":"linear",
+    "topo_size":30,
+    "group_size":3,
+    "group_delay":100,
+    "hosts_per_switch":2
+}
+multinet_requests.master_cmd(master_ip,
+                             master_port,
+                             'init',
+                             data=topo_data)
 ```
 
 ```python
-# Send a POST request to any master endpoint (except for 'init').
+# Send a POST request to any master endpoint
 # The endpoint is specified by the 'opcode' parameter
-multinet_requests.master_cmd(master_host, master_port, opcode)
+multinet_requests.master_cmd(master_ip, master_port, opcode)
 ```
 
 #### Core components
