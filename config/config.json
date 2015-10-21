@@ -1,4 +1,5 @@
 {
+	"config_file": "config/test-config.json",
 	"master_ip" : "10.1.1.90",
 	"master_port": 3300,
 	"worker_port_list": [3333, 3335],

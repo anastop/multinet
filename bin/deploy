@@ -9,6 +9,7 @@ import util.netutil
 import util.multinet_requests as m_util
 import time
 import logging
+import sys
 
 if __name__ == '__main__':
     """
@@ -36,8 +37,8 @@ if __name__ == '__main__':
     worker_ips = conf['worker_ip_list']
     multinet_base_dir = conf['deploy']['multinet_base_dir']
     # TODO hard-coded for now, fix later
-    config_file = '/tmp/multinet/config/config.json'
-    pythonpath = '/'.join(master_remote_path.split('/')[:-2])
+    config_file = conf['config_file']
+    pythonpath = ':'.join(['/'.join(master_remote_path.split('/')[:-2])] + sys.path)[1:]
     logging.info('PYTHONPATH=%s' % pythonpath)
     master_boot_command = (
         'PYTHONPATH={0} python {1} --json-config {2} > /tmp/multinet/master_log.txt 2>&1 &'.format(

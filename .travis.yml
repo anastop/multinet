@@ -13,6 +13,15 @@ language: python
 python:
   - "2.7"
 
+
+virtualenv:
+  system_site_packages: true
+
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y python-bottle python-requests
+
 # command to install dependencies
 install: 
   - pip install -r requirements.txt
@@ -25,5 +34,9 @@ before_script:
 
 script:
   - PYTHONPATH=/opt/multinet bin/deploy --json-config config/test-config.json
+  - cat /tmp/multinet/master_log.txt
+  - cat /tmp/multinet/multi/worker.py_127.0.0.1_3333_log.txt 
+  - cat /tmp/multinet/multi/worker.py_127.0.0.1_3335_log.txt 
+  - ps aux | grep python
   - PYTHONPATH=/opt/multinet py.test test
   - PYTHONPATH=/opt/multinet bin/cleanup --json-config config/test-config.json
