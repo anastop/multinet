@@ -15,7 +15,7 @@
 		"controller_ip_address":"10.1.1.39",
 		"controller_of_port":6653,
 		"switch_type":"ovsk",
-		"topo_type":"linear",
+		"topo_type":"Linear",
 		"topo_size":10,
 		"group_size":10,
 		"group_delay":100,
