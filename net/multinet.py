@@ -34,12 +34,12 @@ class Multinet(mininet.net.Mininet):
 
     """
     name - class correspondence for the topologies
-    """ 
+    """
     TOPOS = {
-        'disconnected': net.topologies.DisconnectedTopo,
-        'linear': net.topologies.LinearTopo,
-        'ring': net.topologies.RingTopo,
-        'mesh': net.topologies.MeshTopo
+        'Disconnected': net.topologies.DisconnectedTopo,
+        'Linear': net.topologies.LinearTopo,
+        'Ring': net.topologies.RingTopo,
+        'Mesh': net.topologies.MeshTopo
     }
 
     """
@@ -230,7 +230,7 @@ class Multinet(mininet.net.Mininet):
             # ping the void
             host.sendCmd('ping -c{0} {1}'.format(str(ping_cnt),
                                                  str(self.controllers[0].IP())))
-            
+
         logging.debug('[mininet] Hosts should be visible now')
 
     def get_switches(self):
