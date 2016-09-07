@@ -354,7 +354,7 @@ class Multinet(mininet.net.Mininet):
         while (time.time() - transmission_start) <= traffic_transmission_interval:
             src_mac, dst_mac = self.generate_mac_address_pairs(current_mac)
             current_mac = hex(int(current_mac, 16) + 2)
-            # This is the place where generation of flows happens. In order to
+            # At this is place generation of flows happens. In order to
             # work properly we must configure the ODL controller with L2Switch
             # plugin and each switch of the topology must have at least 2
             # hosts.
