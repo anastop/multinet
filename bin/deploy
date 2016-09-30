@@ -40,9 +40,12 @@ if __name__ == '__main__':
     config_file = '/tmp/multinet/config/{0}'.format(config_filename)
     pythonpath = '/tmp/multinet'
     logging.info('PYTHONPATH=%s' % pythonpath)
+    venv_cmd = ''
+    if 'venv_path' in conf:
+        venv_cmd = 'source {0}/bin/activate'.format(conf["venv_path"])
     master_boot_command = (
-        'source {0}/bin/activate; PYTHONPATH={1} python {2} --json-config {3} > /tmp/multinet/master_log.txt 2>&1 &'.format(
-            conf["venv_path"],
+        '{0}; PYTHONPATH={1} python {2} --json-config {3} > /tmp/multinet/master_log.txt 2>&1 &'.format(
+            venv_cmd,
             pythonpath,
             master_remote_path,
             config_file))
@@ -78,8 +81,8 @@ if __name__ == '__main__':
 
     for curr_ip, worker_port in zip(worker_ips,worker_port_list):
         worker_boot_command = (
-            'source {0}/bin/activate; sudo PYTHONPATH={1} python {2} --rest-host {3} --rest-port {4} > {2}_{3}_{4}_log.txt 2>&1 &'. format(
-                conf["venv_path"],
+            '{0}; sudo PYTHONPATH={1} python {2} --rest-host {3} --rest-port {4} > {2}_{3}_{4}_log.txt 2>&1 &'. format(
+                venv_cmd,
                 pythonpath,
                 worker_remote_path,
                 curr_ip,
