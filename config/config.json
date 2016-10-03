@@ -11,7 +11,7 @@
     "password": "root123"
   },
   "topo": {
-    "controller_ip_address":"10.1.38.45",
+    "controller_ip_address":"10.0.1.11",
     "controller_of_port":6653,
     "switch_type":"ovsk",
     "topo_type":"linear",
