@@ -42,7 +42,7 @@ if __name__ == '__main__':
     logging.info('PYTHONPATH=%s' % pythonpath)
     venv_path = '\" \"'
     if 'venv_path' in conf:
-        venv_path = 'source {0}/bin/activate'.format(conf["venv_path"])
+        venv_path = conf["venv_path"]
     master_boot_command = (
         './venv_handler_master.sh {0} {1} {2} {3} > /tmp/multinet/master_log.txt 2>&1 &'.format(
             venv_path,
