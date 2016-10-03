@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     for curr_ip, worker_port in zip(worker_ips,worker_port_list):
         worker_boot_command = (
-            '{0}; sudo PYTHONPATH={1} python {2} --rest-host {3} --rest-port {4} > {2}_{3}_{4}_log.txt 2>&1 &'. format(
+            '{0}; PYTHONPATH={1} python {2} --rest-host {3} --rest-port {4} > {2}_{3}_{4}_log.txt 2>&1 &'. format(
                 venv_cmd,
                 pythonpath,
                 worker_remote_path,
