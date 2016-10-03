@@ -7,7 +7,7 @@
 
 if [ "$#" -eq 4 ]
 then
-    source $1/bin/activate; PYTHONPATH=$2 $3 --json-config $4
+    source $1/bin/activate; PYTHONPATH=$2 python $3 --json-config $4
 else
     echo "Invalid number of arguments."
     exit 1
