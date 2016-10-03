@@ -44,7 +44,7 @@ if __name__ == '__main__':
     if 'venv_path' in conf:
         venv_path = conf["venv_path"]
     master_boot_command = (
-        './venv_handler_master.sh \"{0}\" \"{1}\" \"{2}\" \"{3}\" > /tmp/multinet/master_log.txt 2>&1 &'.format(
+        '{1}/bin/venv_handler_master.sh \"{0}\" \"{1}\" \"{2}\" \"{3}\" > /tmp/multinet/master_log.txt 2>&1 &'.format(
             venv_path,
             pythonpath,
             master_remote_path,
@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     for curr_ip, worker_port in zip(worker_ips,worker_port_list):
         worker_boot_command = (
-            './venv_handler_worker.sh \"{0}\" \"{1}\" \"{2}\" \"{3}\" \"{4}\" > {2}_{3}_{4}_log.txt 2>&1 &'. format(
+            '{1}/bin/venv_handler_worker.sh \"{0}\" \"{1}\" \"{2}\" \"{3}\" \"{4}\" > {2}_{3}_{4}_log.txt 2>&1 &'. format(
                 venv_path,
                 pythonpath,
                 worker_remote_path,
