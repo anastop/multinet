@@ -19,7 +19,7 @@ virtualenv:
 
 
 before_install:
-  - sudo bash deploy/provision.sh
+  - sudo bash ./deploy/provision.sh
 
 # command to install dependencies
 install:
@@ -36,4 +36,4 @@ script:
   - ps aux | grep python
   - PYTHONPATH=/opt/multinet py.test test
   - PYTHONPATH=/opt/multinet bin/cleanup --json-config config/test-config.json
-  - deactivate
+#  - deactivate
