@@ -9,7 +9,7 @@
 # This script is responsible for activating virtual environment for multinet
 # handlers.
 # Arguments:
-# 1. virtual env base path (optional)
+# 1. virtual env base path (optional argument)
 # 2. PYTHONPATH
 # 3. Handler path
 # 4. Config path. The json configuration file path.

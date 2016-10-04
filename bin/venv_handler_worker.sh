@@ -9,7 +9,7 @@
 # This script is responsible for activating virtual environment for the
 # worker process initialization.
 # Arguments:
-# 1. virtual env base path (optional)
+# 1. virtual env base path (optional argument)
 # 2. PYTHONPATH
 # 3. Path of the worker python file
 # 4. IP address of the worker host
