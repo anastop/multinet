@@ -37,9 +37,10 @@ def test_get_switches(config):
     i=0
     for d in res_json:
         for k, v in json.loads(d).items():
-            assert k == 'dpid-{0}'.format(dpid_range[int(k.split('-')[1])])
+            assert k == 'dpid-{0}'.format(dpid_range[int(k.split('-')[-1])])
             assert int(v) == int(config['topo']['topo_size'])
             i += 1
+    assert i == len(config['worker_ip_list'])
 
 def test_stop(config):
     res = m_util.master_cmd(config['master_ip'],
