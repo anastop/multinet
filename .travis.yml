@@ -23,7 +23,6 @@ before_install:
 
 # command to install dependencies
 install:
-  - pip install -U pytest
 
 before_script:
   - sudo bash travis-jobs/create_user.sh
