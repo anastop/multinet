@@ -31,7 +31,6 @@ apt-get update && apt-get install -y \
     openssl \
     net-tools
 
-
 # Python installation and other necessary libraries for pip
 #------------------------------------------------------------------------------
 apt-get update && apt-get install -y \
