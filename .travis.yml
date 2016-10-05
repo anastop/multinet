@@ -19,6 +19,8 @@ virtualenv:
 
 
 before_install:
+  - sudo apt-get update
+  - sudo apt-get install python-bottle
   - sudo bash ./deploy/provision.sh
 
 # command to install dependencies
